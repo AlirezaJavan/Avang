@@ -1,0 +1,62 @@
+# Android build outputs
+build/
+*/build/
+out/
+gen/
+generated/
+bin/
+
+# Gradle internals
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+buildSrc/
+
+# Android binary assets — launcher icons already graphified once; skip on re-runs
+**/res/mipmap-*/
+**/res/drawable-*/
+**/res/raw/
+
+# XML resource files (layouts, strings, colors) — not Kotlin, low graph value
+**/res/layout/
+**/res/values/
+**/res/menu/
+**/res/xml/
+**/res/anim/
+**/res/animator/
+**/res/transition/
+**/*.xml
+
+# Binary / compiled artifacts
+*.apk
+*.aab
+*.dex
+*.class
+*.ap_
+*.jar
+*.aar
+*.so
+*.keystore
+
+# IDE / OS files
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+.kotlin/
+
+# Local config
+local.properties
+*.local.properties
+
+# Test report outputs
+**/test-results/
+**/reports/
+
+# graphify own output (never re-index the index)
+graphify-out/
+
+# Android database schemas (JSON, but not useful for graph)
+**/schemas/
+
+# Instrumented test boilerplate (already captured by AST, low signal)
+**/androidTest/

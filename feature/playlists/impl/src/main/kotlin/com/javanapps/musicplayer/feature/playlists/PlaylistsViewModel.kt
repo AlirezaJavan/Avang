@@ -1,0 +1,65 @@
+package com.javanapps.musicplayer.feature.playlists
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.javanapps.musicplayer.core.domain.repository.AnalysisRepository
+import com.javanapps.musicplayer.core.domain.repository.PlaylistRepository
+import com.javanapps.musicplayer.core.model.Playlist
+import com.javanapps.musicplayer.core.model.SmartPlaylist
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class PlaylistsViewModel
+    @Inject
+    constructor(
+        private val playlistRepository: PlaylistRepository,
+        analysisRepository: AnalysisRepository,
+    ) : ViewModel() {
+        val uiState: StateFlow<PlaylistsUiState> =
+            combine(
+                playlistRepository.getPlaylists(),
+                analysisRepository.observeSmartPlaylists(),
+            ) { playlists, smartPlaylists ->
+                PlaylistsUiState.Success(playlists, smartPlaylists)
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = PlaylistsUiState.Loading,
+            )
+
+        fun createPlaylist(name: String) {
+            viewModelScope.launch {
+                playlistRepository.createPlaylist(name)
+            }
+        }
+
+        fun deletePlaylist(id: Long) {
+            viewModelScope.launch {
+                playlistRepository.deletePlaylist(id)
+            }
+        }
+
+        fun renamePlaylist(
+            id: Long,
+            name: String,
+        ) {
+            viewModelScope.launch {
+                playlistRepository.renamePlaylist(id, name)
+            }
+        }
+    }
+
+sealed interface PlaylistsUiState {
+    data object Loading : PlaylistsUiState
+
+    data class Success(
+        val playlists: List<Playlist>,
+        val smartPlaylists: List<SmartPlaylist>,
+    ) : PlaylistsUiState
+}

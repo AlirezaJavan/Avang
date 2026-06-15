@@ -1,0 +1,97 @@
+plugins {
+    alias(libs.plugins.musicplayer.android.application)
+    alias(libs.plugins.musicplayer.android.application.compose)
+    alias(libs.plugins.musicplayer.hilt)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+android {
+    namespace = "com.javanapps.musicplayer"
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        applicationId = "com.javanapps.musicplayer"
+        versionCode = 1
+        versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Must match DEFAULT_LANGUAGE in core/datastore/build.gradle.kts
+        buildConfigField("String", "DEFAULT_LANGUAGE", "\"${libs.versions.defaultLanguage.get()}\"")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
+    packaging {
+        resources {
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        }
+    }
+}
+
+dependencies {
+    // Features
+    implementation(projects.feature.library.api)
+    implementation(projects.feature.library.impl)
+    implementation(projects.feature.player.api)
+    implementation(projects.feature.player.impl)
+    implementation(projects.feature.playlists.api)
+    implementation(projects.feature.playlists.impl)
+    implementation(projects.feature.favorites.api)
+    implementation(projects.feature.favorites.impl)
+    implementation(projects.feature.equalizer.api)
+    implementation(projects.feature.equalizer.impl)
+    implementation(projects.feature.notes.api)
+    implementation(projects.feature.notes.impl)
+    implementation(projects.feature.settings.api)
+    implementation(projects.feature.settings.impl)
+
+    // Core
+    implementation(projects.core.common)
+    implementation(projects.core.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.model)
+    implementation(projects.core.ui)
+    implementation(projects.core.media)
+
+    // AndroidX
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.dev.chrisbanes.haze)
+    implementation(libs.androidx.profileinstaller)
+    implementation(libs.kotlinx.coroutines.guava)
+    implementation(libs.coil.core)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+
+    // Media3
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
+    implementation(libs.androidx.media3.ui)
+
+    testImplementation(projects.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+}
