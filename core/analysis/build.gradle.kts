@@ -16,7 +16,7 @@ dependencies {
     implementation(projects.core.model)
 
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.tensorflow.lite)
+    implementation(libs.litert)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
