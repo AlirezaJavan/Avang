@@ -11,7 +11,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -25,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
@@ -61,63 +65,42 @@ fun ArtworkImage(
                     Modifier.fillMaxSize()
                 },
         ) {
-            if (artworkUri != null) {
-                val context = LocalContext.current
-                val request =
-                    remember(artworkUri) {
-                        ImageRequest
-                            .Builder(context)
-                            .data(artworkUri)
-                            .crossfade(true)
-                            .build()
-                    }
+            val context = LocalContext.current
+            val request =
+                remember(artworkUri) {
+                    ImageRequest
+                        .Builder(context)
+                        .data(artworkUri)
+                        .crossfade(true)
+                        .build()
+                }
+
+            var isError by remember(artworkUri) { mutableStateOf(false) }
+            var isLoading by remember(artworkUri) { mutableStateOf(true) }
+
+            Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
                     model = request,
                     contentDescription = contentDescription,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
+                    onState = { state ->
+                        isLoading = state is AsyncImagePainter.State.Loading
+                        isError = state is AsyncImagePainter.State.Error ||
+                            state is AsyncImagePainter.State.Empty
+                    },
                 )
-            } else {
-                val primary = MaterialTheme.colorScheme.primary
-                val secondary = MaterialTheme.colorScheme.secondary
-                val tertiary = MaterialTheme.colorScheme.tertiary
 
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.sweepGradient(
-                                    colors =
-                                        listOf(
-                                            primary.copy(alpha = 0.6f),
-                                            secondary.copy(alpha = 0.6f),
-                                            tertiary.copy(alpha = 0.6f),
-                                            primary.copy(alpha = 0.6f),
-                                        ),
-                                ),
-                            ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    // Vinyl grooves effect
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        val radius = size.minDimension / 2
-                        for (i in 1..5) {
-                            drawCircle(
-                                color = Color.White.copy(alpha = 0.05f),
-                                radius = radius * (0.3f + i * 0.12f),
-                                style =
-                                    androidx.compose.ui.graphics.drawscope
-                                        .Stroke(width = 1.dp.toPx()),
-                            )
-                        }
-                    }
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant),
+                    )
+                }
 
-                    Icon(
-                        imageVector = AppIcons.MusicNote,
+                if (isError) {
+                    ArtworkFallback(
                         contentDescription = contentDescription,
-                        tint = Color.White.copy(alpha = 0.8f),
-                        modifier = Modifier.fillMaxSize(0.35f),
+                        isCdStyle = isCdStyle,
                     )
                 }
             }
@@ -144,6 +127,58 @@ fun ArtworkImage(
                             ),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ArtworkFallback(
+    contentDescription: String?,
+    isCdStyle: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val tertiary = MaterialTheme.colorScheme.tertiary
+
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(
+                    Brush.sweepGradient(
+                        colors =
+                            listOf(
+                                primary.copy(alpha = 0.6f),
+                                secondary.copy(alpha = 0.6f),
+                                tertiary.copy(alpha = 0.6f),
+                                primary.copy(alpha = 0.6f),
+                            ),
+                    ),
+                ),
+        contentAlignment = Alignment.Center,
+    ) {
+        // Vinyl grooves effect
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val radius = size.minDimension / 2
+            for (i in 1..5) {
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.05f),
+                    radius = radius * (0.3f + i * 0.12f),
+                    style =
+                        androidx.compose.ui.graphics.drawscope
+                            .Stroke(width = 1.dp.toPx()),
+                )
+            }
+        }
+
+        if (!isCdStyle) {
+            Icon(
+                imageVector = AppIcons.MusicNote,
+                contentDescription = contentDescription,
+                tint = Color.White.copy(alpha = 0.8f),
+                modifier = Modifier.fillMaxSize(0.35f),
+            )
         }
     }
 }
