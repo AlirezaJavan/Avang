@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.javanapps.musicplayer.core.designsystem.component.GlassBottomBar
 import com.javanapps.musicplayer.core.designsystem.component.GlassScaffold
+import com.javanapps.musicplayer.core.designsystem.theme.AuroraBackground
 import com.javanapps.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.javanapps.musicplayer.core.model.PlayerState
 import com.javanapps.musicplayer.core.ui.component.MiniPlayer
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 
 private data class ThemeSettings(
     val darkTheme: Boolean = true,
-    val dynamicColor: Boolean = true,
+    val dynamicColor: Boolean = false,
 )
 
 private fun Configuration.isSystemInDarkTheme() = (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
@@ -144,8 +146,10 @@ private fun MusicPlayerApp(viewModel: MainViewModel) {
 
     SharedTransitionLayout {
         GlassScaffold(hazeState = hazeState) {
+            AuroraBackground(modifier = Modifier.fillMaxSize())
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
+                containerColor = Color.Transparent,
                 bottomBar = {
                     Column {
                         AnimatedVisibility(

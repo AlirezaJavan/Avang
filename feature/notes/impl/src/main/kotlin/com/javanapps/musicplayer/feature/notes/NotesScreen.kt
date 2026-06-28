@@ -1,5 +1,6 @@
 package com.javanapps.musicplayer.feature.notes
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -31,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.javanapps.musicplayer.core.ui.component.EmptyState
+import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.SongRow
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
 import com.javanapps.musicplayer.feature.notes.navigation.NotesRoute
@@ -65,11 +68,7 @@ internal fun NotesScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(CoreUiR.string.core_ui_notes),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(16.dp),
-        )
+        ScreenHeader(title = stringResource(CoreUiR.string.core_ui_notes))
 
         when (val state = uiState) {
             NotesUiState.Loading -> { /* Loading */ }
@@ -88,7 +87,16 @@ internal fun NotesScreen(
                         ) { noteWithSong ->
                             var showEditDialog by remember { mutableStateOf(false) }
 
-                            Column {
+                            val cardShape = MaterialTheme.shapes.medium
+                            Column(
+                                modifier =
+                                    Modifier
+                                        .animateItem()
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp, vertical = 5.dp)
+                                        .clip(cardShape)
+                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f)),
+                            ) {
                                 SongRow(
                                     song = noteWithSong.song,
                                     onClick = { showEditDialog = true },
@@ -106,7 +114,7 @@ internal fun NotesScreen(
                                 Text(
                                     text = noteWithSong.note.note,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(start = 72.dp, end = 16.dp, bottom = 16.dp),
+                                    modifier = Modifier.padding(start = 24.dp, end = 16.dp, bottom = 16.dp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }

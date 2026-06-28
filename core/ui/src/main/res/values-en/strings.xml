@@ -71,4 +71,14 @@
     <string name="core_ui_about">About</string>
     <string name="core_ui_version">Version</string>
     <string name="core_ui_song_count">%d songs</string>
+    <string name="core_ui_my_playlists">My Playlists</string>
+    <string name="core_ui_automatic_playlists">Auto Playlists</string>
+    <string name="core_ui_label_80s">80s</string>
+    <string name="core_ui_label_90s">90s</string>
+    <string name="core_ui_label_acoustic">Acoustic</string>
+    <string name="core_ui_label_classical">Classical</string>
+    <string name="core_ui_label_dance">Dance</string>
+    <string name="core_ui_label_energetic">Energetic</string>
+    <string name="core_ui_label_rock">Rock</string>
+    <string name="core_ui_label_pop">Pop</string>
 </resources>

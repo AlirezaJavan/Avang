@@ -26,7 +26,8 @@ class PlaylistsViewModel
                 playlistRepository.getPlaylists(),
                 analysisRepository.observeSmartPlaylists(),
             ) { playlists, smartPlaylists ->
-                PlaylistsUiState.Success(playlists, smartPlaylists)
+                val filtered = smartPlaylists.filter { it.label in ALLOWED_LABELS }
+                PlaylistsUiState.Success(playlists, filtered)
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -54,6 +55,8 @@ class PlaylistsViewModel
             }
         }
     }
+
+private val ALLOWED_LABELS = setOf("80s", "90s", "Acoustic", "Classical", "Dance", "Energetic", "Rock", "Pop")
 
 sealed interface PlaylistsUiState {
     data object Loading : PlaylistsUiState

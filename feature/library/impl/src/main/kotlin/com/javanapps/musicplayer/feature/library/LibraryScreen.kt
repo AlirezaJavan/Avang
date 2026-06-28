@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -61,9 +60,11 @@ import com.javanapps.musicplayer.core.model.Playlist
 import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.ui.component.ArtworkImage
 import com.javanapps.musicplayer.core.ui.component.EmptyState
+import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.ShimmerBox
 import com.javanapps.musicplayer.core.ui.component.SongRow
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
+import com.javanapps.musicplayer.core.ui.util.clickableScale
 import com.javanapps.musicplayer.feature.library.navigation.AlbumDetailRoute
 import com.javanapps.musicplayer.feature.library.navigation.ArtistDetailRoute
 import com.javanapps.musicplayer.feature.library.navigation.LibraryRoute
@@ -412,7 +413,7 @@ private fun AlbumsList(
                         Modifier
                             .fillMaxWidth()
                             .animateItem()
-                            .clickable { onAlbumClick(album.id) }
+                            .clickableScale { onAlbumClick(album.id) }
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -462,7 +463,7 @@ private fun ArtistsList(
                         Modifier
                             .fillMaxWidth()
                             .animateItem()
-                            .clickable { onArtistClick(artist.id) }
+                            .clickableScale { onArtistClick(artist.id) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -502,18 +503,10 @@ internal fun AlbumDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(CoreUiR.string.core_ui_back))
-            }
-            Text(
-                text = stringResource(CoreUiR.string.core_ui_album_details),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+        ScreenHeader(
+            title = stringResource(CoreUiR.string.core_ui_album_details),
+            onBack = onBackClick,
+        )
 
         when (val state = uiState) {
             AlbumDetailUiState.Loading -> { /* Loading */ }
@@ -575,18 +568,10 @@ internal fun ArtistDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(CoreUiR.string.core_ui_back))
-            }
-            Text(
-                text = stringResource(CoreUiR.string.core_ui_artist_details),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+        ScreenHeader(
+            title = stringResource(CoreUiR.string.core_ui_artist_details),
+            onBack = onBackClick,
+        )
 
         when (val state = uiState) {
             ArtistDetailUiState.Loading -> { /* Loading */ }

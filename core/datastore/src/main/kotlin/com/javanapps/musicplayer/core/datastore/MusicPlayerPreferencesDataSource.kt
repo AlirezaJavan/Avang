@@ -38,7 +38,7 @@ class MusicPlayerPreferencesDataSource
                             ),
                         lastPlayedSongId = preferences[Keys.LAST_PLAYED_SONG_ID],
                         lastPlaybackPosition = preferences[Keys.LAST_PLAYBACK_POSITION] ?: 0L,
-                        dynamicColor = preferences[Keys.DYNAMIC_COLOR] ?: true,
+                        dynamicColor = preferences[Keys.DYNAMIC_COLOR] ?: false,
                         darkThemeConfig =
                             DarkThemeConfig.valueOf(
                                 preferences[Keys.DARK_THEME_CONFIG] ?: DarkThemeConfig.DARK.name,

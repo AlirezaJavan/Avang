@@ -1,7 +1,9 @@
 package com.javanapps.musicplayer.feature.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -107,40 +110,44 @@ internal fun SettingsScreen(
             ) {
                 SettingsSectionTitle(title = stringResource(CoreUiR.string.core_ui_appearance))
 
-                SettingsItem(
-                    title = stringResource(CoreUiR.string.core_ui_theme),
-                    icon = AppIcons.Palette,
-                    subtitle =
-                        when (data.darkThemeConfig) {
-                            DarkThemeConfig.FOLLOW_SYSTEM -> stringResource(CoreUiR.string.core_ui_theme_system)
-                            DarkThemeConfig.LIGHT -> stringResource(CoreUiR.string.core_ui_theme_light)
-                            DarkThemeConfig.DARK -> stringResource(CoreUiR.string.core_ui_theme_dark)
-                        },
-                ) {
-                    val next =
-                        when (data.darkThemeConfig) {
-                            DarkThemeConfig.FOLLOW_SYSTEM -> DarkThemeConfig.LIGHT
-                            DarkThemeConfig.LIGHT -> DarkThemeConfig.DARK
-                            DarkThemeConfig.DARK -> DarkThemeConfig.FOLLOW_SYSTEM
-                        }
-                    onThemeChange(next)
-                }
+                SettingsGroup {
+                    SettingsItem(
+                        title = stringResource(CoreUiR.string.core_ui_theme),
+                        icon = AppIcons.Palette,
+                        subtitle =
+                            when (data.darkThemeConfig) {
+                                DarkThemeConfig.FOLLOW_SYSTEM -> stringResource(CoreUiR.string.core_ui_theme_system)
+                                DarkThemeConfig.LIGHT -> stringResource(CoreUiR.string.core_ui_theme_light)
+                                DarkThemeConfig.DARK -> stringResource(CoreUiR.string.core_ui_theme_dark)
+                            },
+                    ) {
+                        val next =
+                            when (data.darkThemeConfig) {
+                                DarkThemeConfig.FOLLOW_SYSTEM -> DarkThemeConfig.LIGHT
+                                DarkThemeConfig.LIGHT -> DarkThemeConfig.DARK
+                                DarkThemeConfig.DARK -> DarkThemeConfig.FOLLOW_SYSTEM
+                            }
+                        onThemeChange(next)
+                    }
 
-                SettingsToggleItem(
-                    title = stringResource(CoreUiR.string.core_ui_dynamic_color),
-                    icon = AppIcons.ColorLens,
-                    checked = data.dynamicColor,
-                    onCheckedChange = onDynamicColorChange,
-                )
+                    SettingsToggleItem(
+                        title = stringResource(CoreUiR.string.core_ui_dynamic_color),
+                        icon = AppIcons.ColorLens,
+                        checked = data.dynamicColor,
+                        onCheckedChange = onDynamicColorChange,
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 SettingsSectionTitle(title = stringResource(CoreUiR.string.core_ui_language))
 
-                SettingsLanguageItem(
-                    currentLanguage = data.language,
-                    onLanguageChange = onLanguageChange,
-                )
+                SettingsGroup {
+                    SettingsLanguageItem(
+                        currentLanguage = data.language,
+                        onLanguageChange = onLanguageChange,
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -152,15 +159,30 @@ internal fun SettingsScreen(
                         context.packageManager.getPackageInfo(context.packageName, 0)
                     }
 
-                SettingsItem(
-                    title = stringResource(CoreUiR.string.core_ui_version),
-                    icon = Icons.Default.Info,
-                    subtitle = packageInfo.versionName ?: "1.0.0",
-                    onClick = {},
-                )
+                SettingsGroup {
+                    SettingsItem(
+                        title = stringResource(CoreUiR.string.core_ui_version),
+                        icon = Icons.Default.Info,
+                        subtitle = packageInfo.versionName ?: "1.0.0",
+                        onClick = {},
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+private fun SettingsGroup(content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f))
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+        content = content,
+    )
 }
 
 @Composable
