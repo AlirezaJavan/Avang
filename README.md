@@ -27,6 +27,24 @@ Now-in-Android-style modular architecture.
 
 ---
 
+## Screenshots
+
+<!-- Add your screenshots to the screenshots/ folder and they will appear here -->
+
+| Library | Now Playing | Playlists |
+|---|---|---|
+| ![Library](screenshots/library.png) | ![Now Playing](screenshots/now_playing.png) | ![Playlists](screenshots/playlists.png) |
+
+| Favorites | Notes |
+|---|---|
+| ![Favorites](screenshots/favorites.png) | ![Notes](screenshots/notes.png) |
+
+| Settings | Queue                           |
+|---------------------------------------|---------------------------------|
+| ![Settings](screenshots/settings.png) | ![Queue](screenshots/queue.png) |
+
+---
+
 ## Architecture
 
 The project follows the [Now in Android](https://github.com/android/nowinandroid) modular
