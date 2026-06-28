@@ -49,3 +49,8 @@ nia-migration-plan.md
 # Graphify output
 graphify-out/
 cost.json
+
+# Signing keys — never commit these
+*.jks
+*.keystore
+avang-key
