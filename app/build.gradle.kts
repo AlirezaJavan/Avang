@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.musicplayer.android.application.compose)
     alias(libs.plugins.musicplayer.hilt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -40,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.crashlytics)
     // Features
     implementation(projects.feature.library.api)
     implementation(projects.feature.library.impl)
