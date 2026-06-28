@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -85,6 +87,13 @@ class MainActivity : AppCompatActivity() {
                                     darkTheme = uiState.shouldUseDarkTheme(resources.configuration.isSystemInDarkTheme()),
                                     dynamicColor = uiState.shouldUseDynamicColor,
                                 )
+
+                            val currentLocales = AppCompatDelegate.getApplicationLocales()
+                            if (currentLocales.isEmpty || currentLocales.toLanguageTags() != uiState.userData.language) {
+                                AppCompatDelegate.setApplicationLocales(
+                                    LocaleListCompat.forLanguageTags(uiState.userData.language),
+                                )
+                            }
                         }
                     }.collect()
             }

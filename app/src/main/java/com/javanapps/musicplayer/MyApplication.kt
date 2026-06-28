@@ -4,8 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.StrictMode
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil3.ImageLoader
@@ -37,18 +35,9 @@ class MyApplication :
 
     override fun onCreate() {
         super.onCreate()
-        applyDefaultLocaleIfNotSet()
         setStrictModePolicy()
         profileVerifierLogger()
         analysisScheduler.enqueue()
-    }
-
-    private fun applyDefaultLocaleIfNotSet() {
-        if (AppCompatDelegate.getApplicationLocales().isEmpty) {
-            AppCompatDelegate.setApplicationLocales(
-                LocaleListCompat.forLanguageTags(BuildConfig.DEFAULT_LANGUAGE),
-            )
-        }
     }
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
