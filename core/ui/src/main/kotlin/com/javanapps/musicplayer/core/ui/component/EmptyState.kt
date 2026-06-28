@@ -36,6 +36,7 @@ fun EmptyState(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     description: String? = null,
+    action: (@Composable () -> Unit)? = null,
 ) {
     val transition = rememberInfiniteTransition(label = "EmptyState")
     val pulse by transition.animateFloat(
@@ -96,6 +97,10 @@ fun EmptyState(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+        if (action != null) {
+            Spacer(modifier = Modifier.height(24.dp))
+            action()
         }
     }
 }

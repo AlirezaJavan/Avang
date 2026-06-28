@@ -24,7 +24,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -35,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -134,6 +137,10 @@ internal fun PlaylistsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.scan()
+    }
+
     PlaylistsScreen(
         uiState = uiState,
         onPlaylistClick = onPlaylistClick,
@@ -141,6 +148,7 @@ internal fun PlaylistsScreen(
         onCreatePlaylist = viewModel::createPlaylist,
         onDeletePlaylist = viewModel::deletePlaylist,
         onRenamePlaylist = viewModel::renamePlaylist,
+        onScan = viewModel::scan,
         modifier = modifier,
     )
 }
@@ -153,6 +161,7 @@ internal fun PlaylistsScreen(
     onCreatePlaylist: (String) -> Unit,
     onDeletePlaylist: (Long) -> Unit,
     onRenamePlaylist: (Long, String) -> Unit,
+    onScan: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
@@ -160,6 +169,19 @@ internal fun PlaylistsScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.Transparent,
+        topBar = {
+            ScreenHeader(
+                title = stringResource(CoreUiR.string.core_ui_playlists),
+                actions = {
+                    IconButton(onClick = onScan) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = stringResource(CoreUiR.string.core_ui_scan),
+                        )
+                    }
+                },
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { showCreateDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(CoreUiR.string.core_ui_create_playlist))
@@ -189,8 +211,24 @@ internal fun PlaylistsScreen(
                 is PlaylistsUiState.Success -> {
                     if (uiState.playlists.isEmpty() && uiState.smartPlaylists.isEmpty()) {
                         EmptyState(
-                            message = stringResource(CoreUiR.string.core_ui_no_playlists),
+                            message =
+                                if (uiState.noSongs) {
+                                    stringResource(CoreUiR.string.core_ui_no_songs)
+                                } else {
+                                    stringResource(CoreUiR.string.core_ui_no_playlists)
+                                },
                             icon = AppIcons.PlaylistPlay,
+                            description =
+                                if (!uiState.noSongs && uiState.smartPlaylists.isEmpty()) {
+                                    stringResource(CoreUiR.string.core_ui_smart_playlists_not_analyzed)
+                                } else {
+                                    null
+                                },
+                            action = {
+                                Button(onClick = onScan) {
+                                    Text(stringResource(CoreUiR.string.core_ui_scan))
+                                }
+                            },
                         )
                     } else {
                         PlaylistsList(

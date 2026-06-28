@@ -34,6 +34,8 @@ class FakeSongsRepository : SongsRepository {
 
     override fun getSongsByAlbum(albumId: Long): Flow<List<Song>> = songsFlow
 
+    override suspend fun refresh() {}
+
     fun setSongs(songs: List<Song>) {
         songsFlow.tryEmit(songs)
     }

@@ -81,4 +81,6 @@
     <string name="core_ui_label_energetic">پرانرژی</string>
     <string name="core_ui_label_rock">راک</string>
     <string name="core_ui_label_pop">پاپ</string>
+    <string name="core_ui_scan">اسکن</string>
+    <string name="core_ui_smart_playlists_not_analyzed">آهنگ‌ها هنوز تحلیل نشده‌اند تا لیست‌های پخش خودکار ایجاد شوند.</string>
 </resources>

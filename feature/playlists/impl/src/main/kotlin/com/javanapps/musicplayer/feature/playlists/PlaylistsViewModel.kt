@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.javanapps.musicplayer.core.domain.repository.AnalysisRepository
 import com.javanapps.musicplayer.core.domain.repository.PlaylistRepository
+import com.javanapps.musicplayer.core.domain.repository.SongsRepository
 import com.javanapps.musicplayer.core.model.Playlist
 import com.javanapps.musicplayer.core.model.SmartPlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,15 +20,17 @@ class PlaylistsViewModel
     @Inject
     constructor(
         private val playlistRepository: PlaylistRepository,
+        private val songsRepository: SongsRepository,
         analysisRepository: AnalysisRepository,
     ) : ViewModel() {
         val uiState: StateFlow<PlaylistsUiState> =
             combine(
                 playlistRepository.getPlaylists(),
                 analysisRepository.observeSmartPlaylists(),
-            ) { playlists, smartPlaylists ->
+                songsRepository.getSongs(),
+            ) { playlists, smartPlaylists, songs ->
                 val filtered = smartPlaylists.filter { it.label in ALLOWED_LABELS }
-                PlaylistsUiState.Success(playlists, filtered)
+                PlaylistsUiState.Success(playlists, filtered, songs.isEmpty())
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -54,6 +57,12 @@ class PlaylistsViewModel
                 playlistRepository.renamePlaylist(id, name)
             }
         }
+
+        fun scan() {
+            viewModelScope.launch {
+                songsRepository.refresh()
+            }
+        }
     }
 
 private val ALLOWED_LABELS = setOf("80s", "90s", "Acoustic", "Classical", "Dance", "Energetic", "Rock", "Pop")
@@ -64,5 +73,6 @@ sealed interface PlaylistsUiState {
     data class Success(
         val playlists: List<Playlist>,
         val smartPlaylists: List<SmartPlaylist>,
+        val noSongs: Boolean,
     ) : PlaylistsUiState
 }

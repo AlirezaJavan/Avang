@@ -29,7 +29,7 @@ import javax.inject.Inject
 class LibraryViewModel
     @Inject
     constructor(
-        songsRepository: SongsRepository,
+        private val songsRepository: SongsRepository,
         private val favoritesRepository: FavoritesRepository,
         private val playlistRepository: PlaylistRepository,
         private val playerController: PlayerController,
@@ -158,6 +158,12 @@ class LibraryViewModel
         ) {
             viewModelScope.launch {
                 notesRepository.saveNote(songId, content)
+            }
+        }
+
+        fun refresh() {
+            viewModelScope.launch {
+                songsRepository.refresh()
             }
         }
     }

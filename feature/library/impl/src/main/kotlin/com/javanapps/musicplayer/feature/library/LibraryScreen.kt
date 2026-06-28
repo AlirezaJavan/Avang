@@ -36,6 +36,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -110,6 +111,12 @@ internal fun LibraryScreen(
 
     val permissionState = rememberPermissionState(permission)
 
+    LaunchedEffect(permissionState.status.isGranted) {
+        if (permissionState.status.isGranted) {
+            viewModel.refresh()
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         if (permissionState.status.isGranted) {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -143,6 +150,7 @@ internal fun LibraryScreen(
                     viewModel.selectSongForNote(song.id)
                     songToAddNote = song
                 },
+                onRefresh = viewModel::refresh,
             )
 
             if (songToAddToPlaylist != null) {
@@ -195,6 +203,7 @@ internal fun LibraryScreen(
     onAddToQueue: (Song) -> Unit,
     onAddToPlaylistClick: (Song) -> Unit,
     onAddNoteClick: (Song) -> Unit,
+    onRefresh: () -> Unit,
 ) {
     val tabs = LibraryTab.entries
     val pagerState = rememberPagerState { tabs.size }
@@ -223,6 +232,8 @@ internal fun LibraryScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         HorizontalPager(
             state = pagerState,
@@ -254,6 +265,11 @@ internal fun LibraryScreen(
                                 EmptyState(
                                     message = stringResource(CoreUiR.string.core_ui_no_songs),
                                     icon = AppIcons.MusicNote,
+                                    action = {
+                                        Button(onClick = onRefresh) {
+                                            Text(stringResource(CoreUiR.string.core_ui_scan))
+                                        }
+                                    },
                                 )
                             } else {
                                 SongsList(
