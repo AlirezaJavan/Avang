@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.musicplayer.root)
+    alias(libs.plugins.google.gms.google.services) apply false
+    alias(libs.plugins.google.firebase.crashlytics) apply false
 }
 
 subprojects {
