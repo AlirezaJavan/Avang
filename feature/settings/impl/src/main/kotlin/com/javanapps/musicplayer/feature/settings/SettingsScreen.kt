@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
@@ -37,38 +35,24 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.javanapps.musicplayer.core.designsystem.component.GlassTopAppBar
 import com.javanapps.musicplayer.core.domain.repository.UserData
 import com.javanapps.musicplayer.core.model.DarkThemeConfig
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
 import com.javanapps.musicplayer.feature.settings.navigation.SettingsRoute
-import dev.chrisbanes.haze.HazeState
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
-fun NavGraphBuilder.settingsScreen(
-    onBack: () -> Unit,
-    hazeState: HazeState,
-) {
+fun NavGraphBuilder.settingsScreen() {
     composable<SettingsRoute> {
-        SettingsScreen(
-            onBack = onBack,
-            hazeState = hazeState,
-        )
+        SettingsScreen()
     }
 }
 
 @Composable
-internal fun SettingsScreen(
-    onBack: () -> Unit,
-    hazeState: HazeState,
-    viewModel: SettingsViewModel = hiltViewModel(),
-) {
+internal fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val userData by viewModel.userData.collectAsStateWithLifecycle()
 
     SettingsScreen(
         userData = userData,
-        hazeState = hazeState,
-        onBack = onBack,
         onThemeChange = viewModel::setDarkThemeConfig,
         onDynamicColorChange = viewModel::setDynamicColor,
         onLanguageChange = viewModel::setLanguage,
@@ -78,8 +62,6 @@ internal fun SettingsScreen(
 @Composable
 internal fun SettingsScreen(
     userData: UserData?,
-    hazeState: HazeState,
-    onBack: () -> Unit,
     onThemeChange: (DarkThemeConfig) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     onLanguageChange: (String) -> Unit,
@@ -87,19 +69,6 @@ internal fun SettingsScreen(
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        GlassTopAppBar(
-            title = stringResource(CoreUiR.string.core_ui_settings),
-            hazeState = hazeState,
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(CoreUiR.string.core_ui_back),
-                    )
-                }
-            },
-        )
-
         userData?.let { data ->
             Column(
                 modifier =

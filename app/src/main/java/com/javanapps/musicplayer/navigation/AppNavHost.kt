@@ -80,14 +80,10 @@ fun AppNavHost(
         )
         favoritesScreen(
             onSongClick = { navController.navigateToPlayer() },
-            onBack = { navController.popBackStack() },
         )
         equalizerScreen(onBack = { navController.popBackStack() })
         notesScreen()
-        settingsScreen(
-            onBack = { navController.popBackStack() },
-            hazeState = dev.chrisbanes.haze.HazeState(),
-        )
+        settingsScreen()
     }
 }
 

@@ -55,7 +55,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -529,7 +528,7 @@ private fun PlaybackControls(
             Icon(
                 imageVector = AppIcons.Shuffle,
                 contentDescription = stringResource(CoreUiR.string.core_ui_shuffle),
-                tint = if (shuffleMode) MaterialTheme.colorScheme.primary else Color.White,
+                tint = if (shuffleMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
         }
 
@@ -584,7 +583,7 @@ private fun PlaybackControls(
             Icon(
                 imageVector = icon,
                 contentDescription = stringResource(CoreUiR.string.core_ui_repeat),
-                tint = if (repeatMode != RepeatMode.NONE) MaterialTheme.colorScheme.primary else Color.White,
+                tint = if (repeatMode != RepeatMode.NONE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
         }
     }

@@ -317,7 +317,11 @@ private fun LibrarySearchBar(
         )
         Box {
             IconButton(onClick = { sortMenuExpanded = true }) {
-                Icon(AppIcons.Sort, contentDescription = "Sort")
+                Icon(
+                    imageVector = AppIcons.Sort,
+                    contentDescription = "Sort",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             }
             DropdownMenu(
                 expanded = sortMenuExpanded,

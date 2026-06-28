@@ -159,6 +159,7 @@ internal fun PlaylistsScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = Color.Transparent,
         floatingActionButton = {
             FloatingActionButton(onClick = { showCreateDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(CoreUiR.string.core_ui_create_playlist))

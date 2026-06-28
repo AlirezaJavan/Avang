@@ -28,25 +28,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.javanapps.musicplayer.core.ui.component.EmptyState
-import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.ShimmerBox
 import com.javanapps.musicplayer.core.ui.component.SongRow
 import com.javanapps.musicplayer.feature.favorites.navigation.FavoritesRoute
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
-fun NavGraphBuilder.favoritesScreen(
-    onSongClick: (String) -> Unit,
-    onBack: () -> Unit,
-) {
+fun NavGraphBuilder.favoritesScreen(onSongClick: (String) -> Unit) {
     composable<FavoritesRoute> {
-        FavoritesScreen(onSongClick = onSongClick, onBack = onBack)
+        FavoritesScreen(onSongClick = onSongClick)
     }
 }
 
 @Composable
 internal fun FavoritesScreen(
     onSongClick: (String) -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = hiltViewModel(),
 ) {
@@ -58,7 +53,6 @@ internal fun FavoritesScreen(
             viewModel.play(mediaId)
             onSongClick(mediaId)
         },
-        onBack = onBack,
         onToggleFavorite = viewModel::toggleFavorite,
         modifier = modifier,
     )
@@ -68,16 +62,10 @@ internal fun FavoritesScreen(
 internal fun FavoritesScreen(
     uiState: FavoritesUiState,
     onSongClick: (String) -> Unit,
-    onBack: () -> Unit,
     onToggleFavorite: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        ScreenHeader(
-            title = stringResource(CoreUiR.string.core_ui_favorites),
-            onBack = onBack,
-        )
-
         Box(modifier = Modifier.weight(1f)) {
             when (val state = uiState) {
                 FavoritesUiState.Loading -> {
