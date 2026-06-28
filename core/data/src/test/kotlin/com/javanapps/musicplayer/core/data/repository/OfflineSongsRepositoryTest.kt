@@ -2,9 +2,11 @@ package com.javanapps.musicplayer.core.data.repository
 
 import com.google.common.truth.Truth.assertThat
 import com.javanapps.musicplayer.core.data.source.MediaStoreDataSource
+import com.javanapps.musicplayer.core.data.worker.AnalysisScheduler
 import com.javanapps.musicplayer.core.model.Song
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -13,12 +15,14 @@ import org.junit.Test
 
 class OfflineSongsRepositoryTest {
     private lateinit var mediaStoreDataSource: MediaStoreDataSource
+    private lateinit var analysisScheduler: AnalysisScheduler
     private lateinit var repository: OfflineSongsRepository
 
     @Before
     fun setup() {
         mediaStoreDataSource = mockk()
-        repository = OfflineSongsRepository(mediaStoreDataSource)
+        analysisScheduler = mockk()
+        repository = OfflineSongsRepository(mediaStoreDataSource, analysisScheduler)
     }
 
     @Test
@@ -58,6 +62,18 @@ class OfflineSongsRepositoryTest {
 
             assertThat(result).hasSize(2)
             assertThat(result.map { it.id }).containsExactly(1L, 3L)
+        }
+
+    @Test
+    fun refresh_triggersScanAndEnqueueAnalysis() =
+        runTest {
+            every { mediaStoreDataSource.triggerMediaScan() } returns Unit
+            every { analysisScheduler.enqueue() } returns Unit
+
+            repository.refresh()
+
+            verify { mediaStoreDataSource.triggerMediaScan() }
+            verify { analysisScheduler.enqueue() }
         }
 
     private fun createSong(

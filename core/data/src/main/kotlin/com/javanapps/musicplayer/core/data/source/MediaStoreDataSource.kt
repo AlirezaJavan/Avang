@@ -53,7 +53,7 @@ class MediaStoreDataSource
                 awaitClose { contentResolver.unregisterContentObserver(observer) }
             }.flowOn(ioDispatcher).conflate()
 
-        private fun triggerMediaScan() {
+        fun triggerMediaScan() {
             val dirs =
                 listOfNotNull(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),

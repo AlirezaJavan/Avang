@@ -50,46 +50,49 @@ fun DynamicBackground(
             label = "GlowAnim",
         )
 
-    Box(modifier = modifier.fillMaxSize().background(backgroundColor)) {
+    Box(modifier = modifier.fillMaxSize()) {
         // Animated glow circles — animValueState.value is read in draw scope only
-        Spacer(
-            modifier =
-                Modifier.fillMaxSize().drawBehind {
-                    val animValue = animValueState.value
-                    val center = Offset(size.width / 2, size.height / 2)
-                    val radius1 = size.width * 0.8f
-                    val radius2 = size.width * 0.6f
+        if (artworkUri.isNullOrBlank()) {
+            // If no artwork, we don't draw the extra glow circles here
+            // to allow the global AuroraBackground from MainActivity to show through clearly.
+        } else {
+            Spacer(
+                modifier =
+                    Modifier.fillMaxSize().drawBehind {
+                        val animValue = animValueState.value
+                        val center = Offset(size.width / 2, size.height / 2)
+                        val radius1 = size.width * 0.8f
+                        val radius2 = size.width * 0.6f
 
-                    val x1 = center.x + cos(animValue) * 100
-                    val y1 = center.y + sin(animValue) * 200
-                    val x2 = center.x + sin(animValue * 0.7f) * 150
-                    val y2 = center.y + cos(animValue * 0.5f) * 150
+                        val x1 = center.x + cos(animValue) * 100
+                        val y1 = center.y + sin(animValue) * 200
+                        val x2 = center.x + sin(animValue * 0.7f) * 150
+                        val y2 = center.y + cos(animValue * 0.5f) * 150
 
-                    drawCircle(
-                        brush =
-                            Brush.radialGradient(
-                                colors = listOf(primaryColor.copy(alpha = 0.15f), Color.Transparent),
-                                center = Offset(x1, y1),
-                                radius = radius1,
-                            ),
-                        center = Offset(x1, y1),
-                        radius = radius1,
-                    )
+                        drawCircle(
+                            brush =
+                                Brush.radialGradient(
+                                    colors = listOf(primaryColor.copy(alpha = 0.15f), Color.Transparent),
+                                    center = Offset(x1, y1),
+                                    radius = radius1,
+                                ),
+                            center = Offset(x1, y1),
+                            radius = radius1,
+                        )
 
-                    drawCircle(
-                        brush =
-                            Brush.radialGradient(
-                                colors = listOf(secondaryColor.copy(alpha = 0.1f), Color.Transparent),
-                                center = Offset(x2, y2),
-                                radius = radius2,
-                            ),
-                        center = Offset(x2, y2),
-                        radius = radius2,
-                    )
-                },
-        )
+                        drawCircle(
+                            brush =
+                                Brush.radialGradient(
+                                    colors = listOf(secondaryColor.copy(alpha = 0.1f), Color.Transparent),
+                                    center = Offset(x2, y2),
+                                    radius = radius2,
+                                ),
+                            center = Offset(x2, y2),
+                            radius = radius2,
+                        )
+                    },
+            )
 
-        if (!artworkUri.isNullOrBlank()) {
             AsyncImage(
                 model = artworkUri,
                 contentDescription = null,

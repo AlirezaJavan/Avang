@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,19 +33,15 @@ import com.javanapps.musicplayer.core.ui.component.SongRow
 import com.javanapps.musicplayer.feature.favorites.navigation.FavoritesRoute
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
-fun NavGraphBuilder.favoritesScreen(
-    onSongClick: (String) -> Unit,
-    onBack: () -> Unit,
-) {
+fun NavGraphBuilder.favoritesScreen(onSongClick: (String) -> Unit) {
     composable<FavoritesRoute> {
-        FavoritesScreen(onSongClick = onSongClick, onBack = onBack)
+        FavoritesScreen(onSongClick = onSongClick)
     }
 }
 
 @Composable
 internal fun FavoritesScreen(
     onSongClick: (String) -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = hiltViewModel(),
 ) {
@@ -59,7 +53,6 @@ internal fun FavoritesScreen(
             viewModel.play(mediaId)
             onSongClick(mediaId)
         },
-        onBack = onBack,
         onToggleFavorite = viewModel::toggleFavorite,
         modifier = modifier,
     )
@@ -69,24 +62,10 @@ internal fun FavoritesScreen(
 internal fun FavoritesScreen(
     uiState: FavoritesUiState,
     onSongClick: (String) -> Unit,
-    onBack: () -> Unit,
     onToggleFavorite: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-            Text(
-                text = stringResource(CoreUiR.string.core_ui_favorites),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
-
         Box(modifier = Modifier.weight(1f)) {
             when (val state = uiState) {
                 FavoritesUiState.Loading -> {

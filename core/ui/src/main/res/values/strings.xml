@@ -71,4 +71,16 @@
     <string name="core_ui_about">درباره</string>
     <string name="core_ui_version">نسخه</string>
     <string name="core_ui_song_count">%d آهنگ</string>
+    <string name="core_ui_my_playlists">پلی‌لیست‌های من</string>
+    <string name="core_ui_automatic_playlists">پلی‌لیست‌های خودکار</string>
+    <string name="core_ui_label_80s">دهه ۸۰</string>
+    <string name="core_ui_label_90s">دهه ۹۰</string>
+    <string name="core_ui_label_acoustic">آکوستیک</string>
+    <string name="core_ui_label_classical">کلاسیک</string>
+    <string name="core_ui_label_dance">رقص</string>
+    <string name="core_ui_label_energetic">پرانرژی</string>
+    <string name="core_ui_label_rock">راک</string>
+    <string name="core_ui_label_pop">پاپ</string>
+    <string name="core_ui_scan">اسکن</string>
+    <string name="core_ui_smart_playlists_not_analyzed">آهنگ‌ها هنوز تحلیل نشده‌اند تا لیست‌های پخش خودکار ایجاد شوند.</string>
 </resources>

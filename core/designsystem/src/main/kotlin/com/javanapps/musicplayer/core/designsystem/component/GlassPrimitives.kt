@@ -1,7 +1,6 @@
 package com.javanapps.musicplayer.core.designsystem.component
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -62,11 +61,13 @@ fun GlassScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Box(
+    Surface(
         modifier =
             modifier
                 .fillMaxSize()
                 .hazeSource(state = hazeState),
+        color = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
         content()
     }

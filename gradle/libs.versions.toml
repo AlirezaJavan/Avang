@@ -40,10 +40,10 @@ spotless = "7.0.2"
 materialIcons = "1.7.8"
 androidxAnnotation = "1.10.0"
 profileinstaller = "1.4.1"
-tensorflowLite = "2.16.1"
+liteRt = "2.1.5"
 
 [libraries]
-tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tensorflowLite" }
+litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "liteRt" }
 # Build tools
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }

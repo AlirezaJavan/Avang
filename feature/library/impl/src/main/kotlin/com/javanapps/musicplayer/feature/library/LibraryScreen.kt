@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -37,6 +36,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,9 +61,11 @@ import com.javanapps.musicplayer.core.model.Playlist
 import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.ui.component.ArtworkImage
 import com.javanapps.musicplayer.core.ui.component.EmptyState
+import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.ShimmerBox
 import com.javanapps.musicplayer.core.ui.component.SongRow
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
+import com.javanapps.musicplayer.core.ui.util.clickableScale
 import com.javanapps.musicplayer.feature.library.navigation.AlbumDetailRoute
 import com.javanapps.musicplayer.feature.library.navigation.ArtistDetailRoute
 import com.javanapps.musicplayer.feature.library.navigation.LibraryRoute
@@ -109,6 +111,12 @@ internal fun LibraryScreen(
 
     val permissionState = rememberPermissionState(permission)
 
+    LaunchedEffect(permissionState.status.isGranted) {
+        if (permissionState.status.isGranted) {
+            viewModel.refresh()
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         if (permissionState.status.isGranted) {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -142,6 +150,7 @@ internal fun LibraryScreen(
                     viewModel.selectSongForNote(song.id)
                     songToAddNote = song
                 },
+                onRefresh = viewModel::refresh,
             )
 
             if (songToAddToPlaylist != null) {
@@ -194,6 +203,7 @@ internal fun LibraryScreen(
     onAddToQueue: (Song) -> Unit,
     onAddToPlaylistClick: (Song) -> Unit,
     onAddNoteClick: (Song) -> Unit,
+    onRefresh: () -> Unit,
 ) {
     val tabs = LibraryTab.entries
     val pagerState = rememberPagerState { tabs.size }
@@ -222,6 +232,8 @@ internal fun LibraryScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         HorizontalPager(
             state = pagerState,
@@ -253,6 +265,11 @@ internal fun LibraryScreen(
                                 EmptyState(
                                     message = stringResource(CoreUiR.string.core_ui_no_songs),
                                     icon = AppIcons.MusicNote,
+                                    action = {
+                                        Button(onClick = onRefresh) {
+                                            Text(stringResource(CoreUiR.string.core_ui_scan))
+                                        }
+                                    },
                                 )
                             } else {
                                 SongsList(
@@ -316,7 +333,11 @@ private fun LibrarySearchBar(
         )
         Box {
             IconButton(onClick = { sortMenuExpanded = true }) {
-                Icon(AppIcons.Sort, contentDescription = "Sort")
+                Icon(
+                    imageVector = AppIcons.Sort,
+                    contentDescription = "Sort",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             }
             DropdownMenu(
                 expanded = sortMenuExpanded,
@@ -412,7 +433,7 @@ private fun AlbumsList(
                         Modifier
                             .fillMaxWidth()
                             .animateItem()
-                            .clickable { onAlbumClick(album.id) }
+                            .clickableScale { onAlbumClick(album.id) }
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -462,7 +483,7 @@ private fun ArtistsList(
                         Modifier
                             .fillMaxWidth()
                             .animateItem()
-                            .clickable { onArtistClick(artist.id) }
+                            .clickableScale { onArtistClick(artist.id) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -502,18 +523,10 @@ internal fun AlbumDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(CoreUiR.string.core_ui_back))
-            }
-            Text(
-                text = stringResource(CoreUiR.string.core_ui_album_details),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+        ScreenHeader(
+            title = stringResource(CoreUiR.string.core_ui_album_details),
+            onBack = onBackClick,
+        )
 
         when (val state = uiState) {
             AlbumDetailUiState.Loading -> { /* Loading */ }
@@ -575,18 +588,10 @@ internal fun ArtistDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(CoreUiR.string.core_ui_back))
-            }
-            Text(
-                text = stringResource(CoreUiR.string.core_ui_artist_details),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+        ScreenHeader(
+            title = stringResource(CoreUiR.string.core_ui_artist_details),
+            onBack = onBackClick,
+        )
 
         when (val state = uiState) {
             ArtistDetailUiState.Loading -> { /* Loading */ }

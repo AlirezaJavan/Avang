@@ -1,5 +1,6 @@
 package com.javanapps.musicplayer.feature.equalizer
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,21 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
@@ -38,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.javanapps.musicplayer.core.domain.equalizer.EqualizerState
+import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.feature.equalizer.navigation.EqualizerRoute
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
@@ -77,32 +75,24 @@ internal fun EqualizerScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text(stringResource(CoreUiR.string.core_ui_equalizer)) },
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(CoreUiR.string.core_ui_back),
-                    )
-                }
-            },
-            actions = {
-                if (state.initialized) {
-                    Text(
-                        text = stringResource(if (state.enabled) CoreUiR.string.core_ui_eq_on else CoreUiR.string.core_ui_eq_off),
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(end = 4.dp),
-                        color = if (state.enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Switch(
-                        checked = state.enabled,
-                        onCheckedChange = onToggleEnabled,
-                        modifier = Modifier.padding(end = 8.dp),
-                    )
-                }
-            },
-        )
+        ScreenHeader(
+            title = stringResource(CoreUiR.string.core_ui_equalizer),
+            onBack = onBack,
+        ) {
+            if (state.initialized) {
+                Text(
+                    text = stringResource(if (state.enabled) CoreUiR.string.core_ui_eq_on else CoreUiR.string.core_ui_eq_off),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(end = 4.dp),
+                    color = if (state.enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Switch(
+                    checked = state.enabled,
+                    onCheckedChange = onToggleEnabled,
+                    modifier = Modifier.padding(end = 8.dp),
+                )
+            }
+        }
 
         if (!state.initialized) {
             Box(
@@ -141,6 +131,9 @@ internal fun EqualizerScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f))
+                            .padding(vertical = 16.dp)
                             .height(240.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,

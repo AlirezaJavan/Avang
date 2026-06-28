@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.javanapps.musicplayer.core.domain.repository.UserData
 import com.javanapps.musicplayer.core.model.DarkThemeConfig
-import dev.chrisbanes.haze.HazeState
 import org.junit.Rule
 import org.junit.Test
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
@@ -31,8 +30,6 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsScreen(
                 userData = userData,
-                hazeState = HazeState(),
-                onBack = {},
                 onThemeChange = {},
                 onDynamicColorChange = {},
                 onLanguageChange = {},

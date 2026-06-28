@@ -1,6 +1,7 @@
 package com.javanapps.musicplayer.core.data.repository
 
 import com.javanapps.musicplayer.core.data.source.MediaStoreDataSource
+import com.javanapps.musicplayer.core.data.worker.AnalysisScheduler
 import com.javanapps.musicplayer.core.domain.repository.SongsRepository
 import com.javanapps.musicplayer.core.model.Album
 import com.javanapps.musicplayer.core.model.Artist
@@ -13,6 +14,7 @@ class OfflineSongsRepository
     @Inject
     constructor(
         private val mediaStoreDataSource: MediaStoreDataSource,
+        private val analysisScheduler: AnalysisScheduler,
     ) : SongsRepository {
         override fun getSongs(): Flow<List<Song>> = mediaStoreDataSource.getSongs()
 
@@ -34,4 +36,9 @@ class OfflineSongsRepository
             mediaStoreDataSource.getSongs().map { songs ->
                 songs.filter { it.albumId == albumId }
             }
+
+        override suspend fun refresh() {
+            mediaStoreDataSource.triggerMediaScan()
+            analysisScheduler.enqueue()
+        }
     }

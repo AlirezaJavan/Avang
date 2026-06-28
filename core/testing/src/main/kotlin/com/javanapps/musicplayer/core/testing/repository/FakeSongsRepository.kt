@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.map
 class FakeSongsRepository : SongsRepository {
     private val songsFlow = MutableSharedFlow<List<Song>>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
+    init {
+        songsFlow.tryEmit(emptyList())
+    }
+
     override fun getSongs(): Flow<List<Song>> = songsFlow
 
     override fun getSong(mediaId: String): Flow<Song?> = songsFlow.map { songs -> songs.find { it.mediaId == mediaId } }
@@ -33,6 +37,8 @@ class FakeSongsRepository : SongsRepository {
     override fun getSongsByArtist(artistId: Long): Flow<List<Song>> = songsFlow
 
     override fun getSongsByAlbum(albumId: Long): Flow<List<Song>> = songsFlow
+
+    override suspend fun refresh() {}
 
     fun setSongs(songs: List<Song>) {
         songsFlow.tryEmit(songs)

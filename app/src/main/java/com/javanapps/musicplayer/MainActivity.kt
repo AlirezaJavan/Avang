@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -31,9 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,6 +48,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.javanapps.musicplayer.core.designsystem.component.GlassBottomBar
 import com.javanapps.musicplayer.core.designsystem.component.GlassScaffold
+import com.javanapps.musicplayer.core.designsystem.theme.AuroraBackground
 import com.javanapps.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.javanapps.musicplayer.core.model.PlayerState
 import com.javanapps.musicplayer.core.ui.component.MiniPlayer
@@ -83,6 +87,13 @@ class MainActivity : AppCompatActivity() {
                                     darkTheme = uiState.shouldUseDarkTheme(resources.configuration.isSystemInDarkTheme()),
                                     dynamicColor = uiState.shouldUseDynamicColor,
                                 )
+
+                            val currentLocales = AppCompatDelegate.getApplicationLocales()
+                            if (currentLocales.isEmpty || currentLocales.toLanguageTags() != uiState.userData.language) {
+                                AppCompatDelegate.setApplicationLocales(
+                                    LocaleListCompat.forLanguageTags(uiState.userData.language),
+                                )
+                            }
                         }
                     }.collect()
             }
@@ -107,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
 private data class ThemeSettings(
     val darkTheme: Boolean = true,
-    val dynamicColor: Boolean = true,
+    val dynamicColor: Boolean = false,
 )
 
 private fun Configuration.isSystemInDarkTheme() = (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
@@ -144,8 +155,10 @@ private fun MusicPlayerApp(viewModel: MainViewModel) {
 
     SharedTransitionLayout {
         GlassScaffold(hazeState = hazeState) {
+            AuroraBackground(modifier = Modifier.fillMaxSize())
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
+                containerColor = Color.Transparent,
                 bottomBar = {
                     Column {
                         AnimatedVisibility(

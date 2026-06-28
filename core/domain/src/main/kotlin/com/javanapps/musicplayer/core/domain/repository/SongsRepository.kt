@@ -17,4 +17,6 @@ interface SongsRepository {
     fun getSongsByArtist(artistId: Long): Flow<List<Song>>
 
     fun getSongsByAlbum(albumId: Long): Flow<List<Song>>
+
+    suspend fun refresh()
 }

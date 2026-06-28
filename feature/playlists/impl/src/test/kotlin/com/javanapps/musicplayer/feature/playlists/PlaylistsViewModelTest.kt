@@ -5,6 +5,7 @@ import com.javanapps.musicplayer.core.model.SongTag
 import com.javanapps.musicplayer.core.model.TagSource
 import com.javanapps.musicplayer.core.testing.repository.FakeAnalysisRepository
 import com.javanapps.musicplayer.core.testing.repository.FakePlaylistRepository
+import com.javanapps.musicplayer.core.testing.repository.FakeSongsRepository
 import com.javanapps.musicplayer.core.testing.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -24,15 +25,18 @@ class PlaylistsViewModelTest {
 
     private lateinit var viewModel: PlaylistsViewModel
     private lateinit var playlistRepository: FakePlaylistRepository
+    private lateinit var songsRepository: FakeSongsRepository
     private lateinit var analysisRepository: FakeAnalysisRepository
 
     @Before
     fun setup() {
         playlistRepository = FakePlaylistRepository()
+        songsRepository = FakeSongsRepository()
         analysisRepository = FakeAnalysisRepository()
         viewModel =
             PlaylistsViewModel(
                 playlistRepository = playlistRepository,
+                songsRepository = songsRepository,
                 analysisRepository = analysisRepository,
             )
     }
@@ -68,15 +72,34 @@ class PlaylistsViewModelTest {
 
             analysisRepository.setTags(
                 listOf(
-                    SongTag(1L, "Calm", 0.9f, TagSource.AUDIO_RULES),
-                    SongTag(2L, "Calm", 0.9f, TagSource.AUDIO_RULES),
+                    SongTag(1L, "Rock", 0.9f, TagSource.AUDIO_RULES),
+                    SongTag(2L, "Rock", 0.9f, TagSource.AUDIO_RULES),
                 ),
             )
 
             val state = viewModel.uiState.value as PlaylistsUiState.Success
             assertEquals(1, state.smartPlaylists.size)
-            assertEquals("Calm", state.smartPlaylists[0].label)
+            assertEquals("Rock", state.smartPlaylists[0].label)
             assertEquals(2, state.smartPlaylists[0].songCount)
+        }
+
+    @Test
+    fun uiState_filtersOutNonCuratedSmartPlaylists() =
+        runTest {
+            backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+
+            // Only the eight curated labels should surface; everything else is hidden.
+            analysisRepository.setTags(
+                listOf(
+                    SongTag(1L, "Calm", 0.9f, TagSource.AUDIO_RULES),
+                    SongTag(2L, "Intense", 0.9f, TagSource.AUDIO_RULES),
+                    SongTag(3L, "Pop", 0.9f, TagSource.AUDIO_RULES),
+                ),
+            )
+
+            val state = viewModel.uiState.value as PlaylistsUiState.Success
+            assertEquals(1, state.smartPlaylists.size)
+            assertEquals("Pop", state.smartPlaylists[0].label)
         }
 
     @Test
