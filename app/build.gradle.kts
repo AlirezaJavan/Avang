@@ -23,8 +23,23 @@ android {
         buildConfigField("String", "DEFAULT_LANGUAGE", "\"${libs.versions.defaultLanguage.get()}\"")
     }
 
+    signingConfigs {
+        create("release") {
+            val storePath = System.getenv("SIGNING_STORE_PATH")
+            val alias = System.getenv("SIGNING_KEY_ALIAS")
+            val password = System.getenv("SIGNING_KEY_PASSWORD")
+            if (storePath != null && alias != null && password != null) {
+                storeFile = file(storePath)
+                storePassword = password
+                keyAlias = alias
+                keyPassword = password
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
