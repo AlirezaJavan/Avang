@@ -30,6 +30,7 @@ class LibraryScreenTest {
                 onAddToQueue = {},
                 onAddToPlaylistClick = {},
                 onAddNoteClick = {},
+                onRefresh = {},
             )
         }
 
@@ -76,6 +77,7 @@ class LibraryScreenTest {
                 onAddToQueue = {},
                 onAddToPlaylistClick = {},
                 onAddNoteClick = {},
+                onRefresh = {},
             )
         }
 
@@ -108,6 +110,7 @@ class LibraryScreenTest {
                 onAddToQueue = {},
                 onAddToPlaylistClick = {},
                 onAddNoteClick = {},
+                onRefresh = {},
             )
         }
 

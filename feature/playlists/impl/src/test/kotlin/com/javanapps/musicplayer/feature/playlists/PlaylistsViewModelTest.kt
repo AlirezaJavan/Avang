@@ -5,6 +5,7 @@ import com.javanapps.musicplayer.core.model.SongTag
 import com.javanapps.musicplayer.core.model.TagSource
 import com.javanapps.musicplayer.core.testing.repository.FakeAnalysisRepository
 import com.javanapps.musicplayer.core.testing.repository.FakePlaylistRepository
+import com.javanapps.musicplayer.core.testing.repository.FakeSongsRepository
 import com.javanapps.musicplayer.core.testing.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -24,15 +25,18 @@ class PlaylistsViewModelTest {
 
     private lateinit var viewModel: PlaylistsViewModel
     private lateinit var playlistRepository: FakePlaylistRepository
+    private lateinit var songsRepository: FakeSongsRepository
     private lateinit var analysisRepository: FakeAnalysisRepository
 
     @Before
     fun setup() {
         playlistRepository = FakePlaylistRepository()
+        songsRepository = FakeSongsRepository()
         analysisRepository = FakeAnalysisRepository()
         viewModel =
             PlaylistsViewModel(
                 playlistRepository = playlistRepository,
+                songsRepository = songsRepository,
                 analysisRepository = analysisRepository,
             )
     }

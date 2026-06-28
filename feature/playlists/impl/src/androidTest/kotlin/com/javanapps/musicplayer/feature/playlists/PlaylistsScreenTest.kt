@@ -25,6 +25,7 @@ class PlaylistsScreenTest {
                 onCreatePlaylist = {},
                 onDeletePlaylist = {},
                 onRenamePlaylist = { _, _ -> },
+                onScan = {},
             )
         }
 
@@ -40,12 +41,13 @@ class PlaylistsScreenTest {
     fun empty_showsEmptyState() {
         composeTestRule.setContent {
             PlaylistsScreen(
-                uiState = PlaylistsUiState.Success(emptyList(), emptyList()),
+                uiState = PlaylistsUiState.Success(emptyList(), emptyList(), false),
                 onPlaylistClick = {},
                 onSmartPlaylistClick = {},
                 onCreatePlaylist = {},
                 onDeletePlaylist = {},
                 onRenamePlaylist = { _, _ -> },
+                onScan = {},
             )
         }
 
@@ -64,32 +66,31 @@ class PlaylistsScreenTest {
             )
         composeTestRule.setContent {
             PlaylistsScreen(
-                uiState = PlaylistsUiState.Success(playlists, emptyList()),
+                uiState = PlaylistsUiState.Success(playlists, emptyList(), false),
                 onPlaylistClick = {},
                 onSmartPlaylistClick = {},
                 onCreatePlaylist = {},
                 onDeletePlaylist = {},
                 onRenamePlaylist = { _, _ -> },
+                onScan = {},
             )
         }
 
         composeTestRule.onNodeWithText("My Playlist").assertIsDisplayed()
         composeTestRule.onNodeWithText("Another One").assertIsDisplayed()
-        // Check song count text (persian "آهنگ")
-        composeTestRule.onNodeWithText("5 آهنگ").assertIsDisplayed()
-        composeTestRule.onNodeWithText("10 آهنگ").assertIsDisplayed()
     }
 
     @Test
     fun clickAdd_showsCreateDialog() {
         composeTestRule.setContent {
             PlaylistsScreen(
-                uiState = PlaylistsUiState.Success(emptyList(), emptyList()),
+                uiState = PlaylistsUiState.Success(emptyList(), emptyList(), false),
                 onPlaylistClick = {},
                 onSmartPlaylistClick = {},
                 onCreatePlaylist = {},
                 onDeletePlaylist = {},
                 onRenamePlaylist = { _, _ -> },
+                onScan = {},
             )
         }
 

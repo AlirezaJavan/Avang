@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import com.javanapps.musicplayer.core.domain.equalizer.EqualizerState
 import org.junit.Rule
 import org.junit.Test
+import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
 class EqualizerScreenTest {
     @get:Rule
@@ -24,7 +25,10 @@ class EqualizerScreenTest {
             )
         }
 
-        composeTestRule.onNodeWithText("Equalizer not available").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(
+                composeTestRule.activity.getString(CoreUiR.string.core_ui_eq_not_available),
+            ).assertIsDisplayed()
     }
 
     @Test
