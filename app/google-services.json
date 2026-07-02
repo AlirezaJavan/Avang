@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "546733536034",
-    "project_id": "my-apps-63802",
-    "storage_bucket": "my-apps-63802.firebasestorage.app"
+    "project_number": "101796210440",
+    "project_id": "myapps-8863e",
+    "storage_bucket": "myapps-8863e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:546733536034:android:011b9b4e4d624fe0626b7b",
+        "mobilesdk_app_id": "1:101796210440:android:42e91909a1c43a5cf3eebd",
         "android_client_info": {
           "package_name": "com.javanapps.musicplayer"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB4_iMNyjHnZg92Wrb3UX7muGQB2RpkEqM"
+          "current_key": "AIzaSyBnrFzrGUi0E4J3CxOWZ0IdQfYVCnS5P0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101796210440:android:9b7bcd76a878beb4f3eebd",
+        "android_client_info": {
+          "package_name": "javan.moneymanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnrFzrGUi0E4J3CxOWZ0IdQfYVCnS5P0I"
         }
       ],
       "services": {
