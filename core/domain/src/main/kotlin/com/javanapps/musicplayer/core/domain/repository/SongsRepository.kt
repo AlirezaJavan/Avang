@@ -18,5 +18,7 @@ interface SongsRepository {
 
     fun getSongsByAlbum(albumId: Long): Flow<List<Song>>
 
+    fun observeRecentlyAdded(limit: Int = 25): Flow<List<Song>>
+
     suspend fun refresh()
 }

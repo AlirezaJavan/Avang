@@ -65,6 +65,22 @@ class OfflineSongsRepositoryTest {
         }
 
     @Test
+    fun observeRecentlyAdded_sortsNewestFirstAndRespectsLimit() =
+        runTest {
+            val songs =
+                listOf(
+                    createSong(1L, dateAdded = 100L),
+                    createSong(2L, dateAdded = 300L),
+                    createSong(3L, dateAdded = 200L),
+                )
+            every { mediaStoreDataSource.getSongs() } returns flowOf(songs)
+
+            val result = repository.observeRecentlyAdded(limit = 2).first()
+
+            assertThat(result.map { it.id }).containsExactly(2L, 3L).inOrder()
+        }
+
+    @Test
     fun refresh_triggersScanAndEnqueueAnalysis() =
         runTest {
             every { mediaStoreDataSource.triggerMediaScan() } returns Unit
@@ -79,6 +95,7 @@ class OfflineSongsRepositoryTest {
     private fun createSong(
         id: Long,
         artistId: Long = 0L,
+        dateAdded: Long = 0L,
     ) = Song(
         id = id,
         mediaId = id.toString(),
@@ -90,6 +107,6 @@ class OfflineSongsRepositoryTest {
         duration = 3000L,
         artworkUri = null,
         mediaUri = "",
-        dateAdded = 0L,
+        dateAdded = dateAdded,
     )
 }

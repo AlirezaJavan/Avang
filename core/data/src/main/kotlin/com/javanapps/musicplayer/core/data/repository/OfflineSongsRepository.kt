@@ -37,6 +37,11 @@ class OfflineSongsRepository
                 songs.filter { it.albumId == albumId }
             }
 
+        override fun observeRecentlyAdded(limit: Int): Flow<List<Song>> =
+            mediaStoreDataSource.getSongs().map { songs ->
+                songs.sortedByDescending { it.dateAdded }.take(limit)
+            }
+
         override suspend fun refresh() {
             mediaStoreDataSource.triggerMediaScan()
             analysisScheduler.enqueue()

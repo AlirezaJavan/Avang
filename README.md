@@ -14,16 +14,22 @@ Now-in-Android-style modular architecture.
 ## Features
 
 - Browse on-device songs, albums, and artists (MediaStore)
-- Now Playing screen with album art, seek bar, and playback controls
+- Home feed — recently played, most played, and recently added shelves
+- Now Playing screen with album art, seek bar, and playback controls (RTL-safe: transport
+  controls and progress always read left-to-right, matching universal player conventions)
 - Mini player visible app-wide when music is playing
 - Playlists — create, rename, delete, reorder, add/remove songs
+- Smart playlists — songs auto-categorized in the background via on-device audio analysis
 - Favorites — toggle anywhere, dedicated screen
 - Notes — add personal notes or lyrics to any song
 - Shuffle, Repeat-all, Repeat-one
 - Equalizer with presets and band control
-- Dynamic per-app language switching (Persian / English)
+- Dynamic per-app language switching (Persian / English), bundled Vazir font for correct
+  Persian glyph shaping
 - System / light / dark theme with dynamic color (Android 12+)
 - Liquid-glass design with frosted blur surfaces
+- Library sync and smart-playlist analysis run as a foreground service (with progress
+  notification) and are kept up to date by a periodic background worker
 
 ---
 
@@ -58,9 +64,10 @@ architecture closely.
 :core:common          :core:model         :core:designsystem
 :core:database        :core:datastore     :core:data
 :core:domain          :core:media         :core:ui
-:core:testing
+:core:analysis        :core:testing
 :feature:library      :feature:player     :feature:playlists
 :feature:favorites    :feature:notes      :feature:equalizer
+:feature:settings     :feature:home
 ```
 
 Each `:feature:*` is split into `:api` (navigation contracts, public routes) and

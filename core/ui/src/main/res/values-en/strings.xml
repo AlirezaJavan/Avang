@@ -43,7 +43,6 @@
     <string name="core_ui_save">Save</string>
     <string name="core_ui_delete">Delete</string>
     <string name="core_ui_playlist_details">Playlist details</string>
-    <string name="core_ui_smart_playlists">Smart playlists</string>
     <string name="core_ui_no_playlists">No playlists found</string>
     <string name="core_ui_edit_note">Edit Note</string>
     <string name="core_ui_delete_note">Delete Note</string>
@@ -82,5 +81,9 @@
     <string name="core_ui_label_rock">Rock</string>
     <string name="core_ui_label_pop">Pop</string>
     <string name="core_ui_scan">Scan</string>
+    <string name="core_ui_home">Home</string>
+    <string name="core_ui_recently_played">Recently Played</string>
+    <string name="core_ui_most_played">Most Played</string>
+    <string name="core_ui_recently_added">Recently Added</string>
     <string name="core_ui_smart_playlists_not_analyzed">Songs have not been analyzed yet to create automatic playlists.</string>
 </resources>

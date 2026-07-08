@@ -43,7 +43,6 @@
     <string name="core_ui_save">ذخیره</string>
     <string name="core_ui_delete">حذف</string>
     <string name="core_ui_playlist_details">جزئیات لیست پخش</string>
-    <string name="core_ui_smart_playlists">پلی‌لیست‌های هوشمند</string>
     <string name="core_ui_no_playlists">لیست پخشی یافت نشد</string>
     <string name="core_ui_edit_note">ویرایش یادداشت</string>
     <string name="core_ui_delete_note">حذف یادداشت</string>
@@ -82,5 +81,9 @@
     <string name="core_ui_label_rock">راک</string>
     <string name="core_ui_label_pop">پاپ</string>
     <string name="core_ui_scan">اسکن</string>
+    <string name="core_ui_home">خانه</string>
+    <string name="core_ui_recently_played">اخیراً پخش شده</string>
+    <string name="core_ui_most_played">پرتکرارترین‌ها</string>
+    <string name="core_ui_recently_added">به‌تازگی اضافه شده</string>
     <string name="core_ui_smart_playlists_not_analyzed">آهنگ‌ها هنوز تحلیل نشده‌اند تا لیست‌های پخش خودکار ایجاد شوند.</string>
 </resources>

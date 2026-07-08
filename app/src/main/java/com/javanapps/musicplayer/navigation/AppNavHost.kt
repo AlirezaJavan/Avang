@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import com.javanapps.musicplayer.feature.equalizer.equalizerScreen
 import com.javanapps.musicplayer.feature.equalizer.navigation.navigateToEqualizer
 import com.javanapps.musicplayer.feature.favorites.favoritesScreen
+import com.javanapps.musicplayer.feature.home.homeScreen
 import com.javanapps.musicplayer.feature.library.libraryScreen
 import com.javanapps.musicplayer.feature.library.navigation.navigateToAlbumDetail
 import com.javanapps.musicplayer.feature.library.navigation.navigateToArtistDetail
@@ -35,7 +36,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = TopLevelDestination.LIBRARY.route,
+        startDestination = TopLevelDestination.HOME.route,
         modifier = modifier,
         enterTransition = {
             val targetIndex = getTabIndex(targetState.destination)
@@ -62,6 +63,9 @@ fun AppNavHost(
             fadeOut() + slideOutHorizontally { factor * it }
         },
     ) {
+        homeScreen(
+            onSongClick = { navController.navigateToPlayer() },
+        )
         libraryScreen(
             onSongClick = { navController.navigateToPlayer() },
             onAlbumClick = { albumId -> navController.navigateToAlbumDetail(albumId) },

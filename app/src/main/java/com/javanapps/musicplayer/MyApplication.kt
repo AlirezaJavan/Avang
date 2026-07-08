@@ -38,6 +38,7 @@ class MyApplication :
         setStrictModePolicy()
         profileVerifierLogger()
         analysisScheduler.enqueue()
+        analysisScheduler.enqueuePeriodic()
     }
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
