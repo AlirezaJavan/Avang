@@ -10,6 +10,7 @@ import androidx.media3.session.SessionToken
 import com.javanapps.musicplayer.core.common.dispatcher.Dispatcher
 import com.javanapps.musicplayer.core.common.dispatcher.MusicPlayerDispatchers.Default
 import com.javanapps.musicplayer.core.common.dispatcher.di.ApplicationScope
+import com.javanapps.musicplayer.core.domain.repository.PlayHistoryRepository
 import com.javanapps.musicplayer.core.domain.repository.SongsRepository
 import com.javanapps.musicplayer.core.domain.repository.UserDataRepository
 import com.javanapps.musicplayer.core.media.service.MusicService
@@ -42,10 +43,16 @@ class Media3PlayerController
         @Dispatcher(Default) private val dispatcher: CoroutineDispatcher,
         private val userDataRepository: UserDataRepository,
         private val songsRepository: SongsRepository,
+        private val playHistoryRepository: PlayHistoryRepository,
     ) : PlayerController {
         private var mediaController: MediaController? = null
         private val _playerState = MutableStateFlow(PlayerState())
         override val playerState: StateFlow<PlayerState> = _playerState.asStateFlow()
+
+        // Tracks whether the current media item has already had a play recorded, so pausing
+        // and resuming the same song doesn't count as multiple plays, while switching songs
+        // (including a repeated track via repeat-one) does.
+        private var playRecordedForCurrentItem = false
 
         init {
             initializeController()
@@ -73,6 +80,12 @@ class Media3PlayerController
                             ) {
                                 savePlaybackPosition()
                             }
+                            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
+                                playRecordedForCurrentItem = false
+                            }
+                            if (events.contains(Player.EVENT_IS_PLAYING_CHANGED) && player.isPlaying) {
+                                recordPlayForCurrentItem()
+                            }
                         }
                     },
                 )
@@ -96,6 +109,13 @@ class Media3PlayerController
                     }
                 }
             }
+        }
+
+        private fun recordPlayForCurrentItem() {
+            if (playRecordedForCurrentItem) return
+            val songId = mediaController?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+            playRecordedForCurrentItem = true
+            scope.launch(dispatcher) { playHistoryRepository.recordPlay(songId) }
         }
 
         private fun savePlaybackPosition() {

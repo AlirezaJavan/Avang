@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_data_notification_channel_library_sync">همگام‌سازی کتابخانه موسیقی</string>
+    <string name="core_data_notification_analyzing_library">در حال تحلیل کتابخانه موسیقی…</string>
+    <string name="core_data_notification_analyzing_library_progress">%1$d از %2$d آهنگ تحلیل شد</string>
+</resources>

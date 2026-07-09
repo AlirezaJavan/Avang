@@ -5,12 +5,14 @@ import android.content.Context
 import com.javanapps.musicplayer.core.data.repository.OfflineAnalysisRepository
 import com.javanapps.musicplayer.core.data.repository.OfflineFavoritesRepository
 import com.javanapps.musicplayer.core.data.repository.OfflineNotesRepository
+import com.javanapps.musicplayer.core.data.repository.OfflinePlayHistoryRepository
 import com.javanapps.musicplayer.core.data.repository.OfflinePlaylistRepository
 import com.javanapps.musicplayer.core.data.repository.OfflineSongsRepository
 import com.javanapps.musicplayer.core.data.repository.OfflineUserDataRepository
 import com.javanapps.musicplayer.core.domain.repository.AnalysisRepository
 import com.javanapps.musicplayer.core.domain.repository.FavoritesRepository
 import com.javanapps.musicplayer.core.domain.repository.NotesRepository
+import com.javanapps.musicplayer.core.domain.repository.PlayHistoryRepository
 import com.javanapps.musicplayer.core.domain.repository.PlaylistRepository
 import com.javanapps.musicplayer.core.domain.repository.SongsRepository
 import com.javanapps.musicplayer.core.domain.repository.UserDataRepository
@@ -42,6 +44,9 @@ interface DataModule {
 
     @Binds
     fun bindsAnalysisRepository(analysisRepository: OfflineAnalysisRepository): AnalysisRepository
+
+    @Binds
+    fun bindsPlayHistoryRepository(playHistoryRepository: OfflinePlayHistoryRepository): PlayHistoryRepository
 
     companion object {
         @Provides

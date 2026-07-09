@@ -16,8 +16,8 @@ android {
 
     defaultConfig {
         applicationId = "com.javanapps.musicplayer"
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Must match DEFAULT_LANGUAGE in core/datastore/build.gradle.kts
         buildConfigField("String", "DEFAULT_LANGUAGE", "\"${libs.versions.defaultLanguage.get()}\"")
@@ -59,6 +59,8 @@ android {
 dependencies {
     implementation(libs.firebase.crashlytics)
     // Features
+    implementation(projects.feature.home.api)
+    implementation(projects.feature.home.impl)
     implementation(projects.feature.library.api)
     implementation(projects.feature.library.impl)
     implementation(projects.feature.player.api)

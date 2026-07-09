@@ -2,15 +2,25 @@ package com.javanapps.musicplayer.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.javanapps.musicplayer.core.designsystem.R
+
+/** Vazir — bundled so Persian (and Latin) text renders with proper glyph shaping and a consistent look. */
+val Vazir: FontFamily =
+    FontFamily(
+        Font(R.font.vazir, FontWeight.Normal),
+        Font(R.font.vazir_fd, FontWeight.Medium),
+        Font(R.font.vazir_fd, FontWeight.Bold),
+    )
 
 val Typography =
     Typography(
         displayLarge =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 57.sp,
                 lineHeight = 64.sp,
@@ -18,7 +28,7 @@ val Typography =
             ),
         displayMedium =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 45.sp,
                 lineHeight = 52.sp,
@@ -26,7 +36,7 @@ val Typography =
             ),
         displaySmall =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 36.sp,
                 lineHeight = 44.sp,
@@ -34,7 +44,7 @@ val Typography =
             ),
         headlineLarge =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 32.sp,
                 lineHeight = 40.sp,
@@ -42,7 +52,7 @@ val Typography =
             ),
         headlineMedium =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 28.sp,
                 lineHeight = 36.sp,
@@ -50,7 +60,7 @@ val Typography =
             ),
         headlineSmall =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 24.sp,
                 lineHeight = 32.sp,
@@ -58,7 +68,7 @@ val Typography =
             ),
         titleLarge =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
@@ -66,7 +76,7 @@ val Typography =
             ),
         titleMedium =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 lineHeight = 24.sp,
@@ -74,7 +84,7 @@ val Typography =
             ),
         titleSmall =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
@@ -82,7 +92,7 @@ val Typography =
             ),
         bodyLarge =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
@@ -90,7 +100,7 @@ val Typography =
             ),
         bodyMedium =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
@@ -98,7 +108,7 @@ val Typography =
             ),
         bodySmall =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
@@ -106,7 +116,7 @@ val Typography =
             ),
         labelLarge =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
@@ -114,7 +124,7 @@ val Typography =
             ),
         labelMedium =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Medium,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
@@ -122,7 +132,7 @@ val Typography =
             ),
         labelSmall =
             TextStyle(
-                fontFamily = FontFamily.Default,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Medium,
                 fontSize = 11.sp,
                 lineHeight = 16.sp,

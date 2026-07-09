@@ -15,12 +15,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -218,7 +215,6 @@ private fun MusicPlayerApp(viewModel: MainViewModel) {
                         }
                         GlassBottomBar(
                             hazeState = hazeState,
-                            modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
                         ) {
                             TopLevelDestination.entries.forEach { destination ->
                                 val selected =
@@ -230,7 +226,7 @@ private fun MusicPlayerApp(viewModel: MainViewModel) {
                                     onClick = {
                                         haptic()
                                         navController.navigate(destination.route) {
-                                            popUpTo(TopLevelDestination.LIBRARY.route) {
+                                            popUpTo(TopLevelDestination.HOME.route) {
                                                 saveState = true
                                             }
                                             launchSingleTop = true

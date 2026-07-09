@@ -60,6 +60,8 @@ include(":feature:notes:api")
 include(":feature:notes:impl")
 include(":feature:settings:api")
 include(":feature:settings:impl")
+include(":feature:home:api")
+include(":feature:home:impl")
 
 // App
 include(":app")

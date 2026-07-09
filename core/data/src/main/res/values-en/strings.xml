@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_data_notification_channel_library_sync">Music library sync</string>
+    <string name="core_data_notification_analyzing_library">Analyzing your music library…</string>
+    <string name="core_data_notification_analyzing_library_progress">%1$d of %2$d songs analyzed</string>
+</resources>

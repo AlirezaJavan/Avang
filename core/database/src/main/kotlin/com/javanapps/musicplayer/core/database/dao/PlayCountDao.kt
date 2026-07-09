@@ -16,6 +16,9 @@ interface PlayCountDao {
     @Query("SELECT * FROM play_counts ORDER BY count DESC")
     fun getMostPlayed(): Flow<List<PlayCountEntity>>
 
+    @Query("SELECT * FROM play_counts ORDER BY last_played DESC")
+    fun getRecentlyPlayed(): Flow<List<PlayCountEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlayCount(playCount: PlayCountEntity)
 
