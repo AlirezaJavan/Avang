@@ -9,6 +9,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -22,7 +23,7 @@ class OfflineSongsRepositoryTest {
     fun setup() {
         mediaStoreDataSource = mockk()
         analysisScheduler = mockk()
-        repository = OfflineSongsRepository(mediaStoreDataSource, analysisScheduler)
+        repository = OfflineSongsRepository(mediaStoreDataSource, analysisScheduler, UnconfinedTestDispatcher())
     }
 
     @Test

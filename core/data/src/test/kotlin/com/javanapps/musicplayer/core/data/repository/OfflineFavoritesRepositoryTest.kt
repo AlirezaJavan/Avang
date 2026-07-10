@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -21,7 +22,7 @@ class OfflineFavoritesRepositoryTest {
     fun setup() {
         favoriteDao = FakeFavoriteDao()
         mediaStoreDataSource = mockk()
-        repository = OfflineFavoritesRepository(favoriteDao, mediaStoreDataSource)
+        repository = OfflineFavoritesRepository(favoriteDao, mediaStoreDataSource, UnconfinedTestDispatcher())
     }
 
     @Test
