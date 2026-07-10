@@ -84,4 +84,9 @@ class FakeUserDataRepository : UserDataRepository {
         current = current.copy(equalizerPreset = preset)
         _userData.tryEmit(current)
     }
+
+    override suspend fun setUseAnimations(useAnimations: Boolean) {
+        current = current.copy(useAnimations = useAnimations)
+        _userData.tryEmit(current)
+    }
 }

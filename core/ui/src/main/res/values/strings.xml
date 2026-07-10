@@ -26,6 +26,7 @@
     <string name="core_ui_artist_details">جزئیات هنرمند</string>
     <string name="core_ui_permission_rationale">برای پخش آهنگ‌ها، برنامه نیاز به دسترسی به فایل‌های صوتی دارد.</string>
     <string name="core_ui_permission_required">دسترسی مورد نیاز است</string>
+    <string name="core_ui_permission_description">آوانگ برای نمایش و پخش موسیقی‌های دستگاه شما، به اجازه دسترسی به فایل‌های صوتی نیاز دارد.</string>
     <string name="core_ui_grant_permission">اجازه دسترسی</string>
     <string name="core_ui_artist_album_count">%1$s • %2$d آهنگ</string>
     <string name="core_ui_artist_album_track_count">%1$d آلبوم • %2$d آهنگ</string>
@@ -64,6 +65,7 @@
     <string name="core_ui_theme_light">روشن</string>
     <string name="core_ui_theme_dark">تاریک</string>
     <string name="core_ui_dynamic_color">رنگ پویا</string>
+    <string name="core_ui_use_animations">استفاده از انیمیشن‌ها</string>
     <string name="core_ui_language">زبان</string>
     <string name="core_ui_language_en">English</string>
     <string name="core_ui_language_fa">فارسی</string>

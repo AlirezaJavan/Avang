@@ -75,9 +75,17 @@ class TfLiteTagClassifier
             val accumulator = FloatArray(labelCount)
             var patches = 0
             var start = 0
+            val inputBuffer = ByteBuffer.allocateDirect(frames * bands * 4).order(ByteOrder.nativeOrder())
             while (start + frames <= mel.size) {
                 val output = Array(1) { FloatArray(labelCount) }
-                interpreter.run(buildPatch(mel, start, frames, bands), output)
+                inputBuffer.clear()
+                for (f in 0 until frames) {
+                    for (b in 0 until bands) {
+                        inputBuffer.putFloat(mel[start + f][b])
+                    }
+                }
+                inputBuffer.rewind()
+                interpreter.run(inputBuffer, output)
                 for (i in 0 until labelCount) accumulator[i] += output[0][i]
                 patches++
                 start += frames
@@ -85,18 +93,6 @@ class TfLiteTagClassifier
             if (patches == 0) return null
             return FloatArray(labelCount) { accumulator[it] / patches }
         }
-
-        private fun buildPatch(
-            mel: Array<FloatArray>,
-            start: Int,
-            frames: Int,
-            bands: Int,
-        ): Array<Array<Array<FloatArray>>> =
-            Array(1) {
-                Array(frames) { f ->
-                    Array(bands) { b -> floatArrayOf(mel[start + f][b]) }
-                }
-            }
 
         private fun loadInterpreter(): Interpreter? =
             try {

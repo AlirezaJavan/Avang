@@ -6,6 +6,7 @@ import com.javanapps.musicplayer.core.domain.controller.PlayerController
 import com.javanapps.musicplayer.core.domain.equalizer.EqualizerManager
 import com.javanapps.musicplayer.core.domain.repository.FavoritesRepository
 import com.javanapps.musicplayer.core.domain.repository.NotesRepository
+import com.javanapps.musicplayer.core.domain.repository.UserDataRepository
 import com.javanapps.musicplayer.core.model.PlayerState
 import com.javanapps.musicplayer.core.model.RepeatMode
 import com.javanapps.musicplayer.core.model.SongNote
@@ -27,9 +28,19 @@ class PlayerViewModel
         private val playerController: PlayerController,
         private val favoritesRepository: FavoritesRepository,
         private val notesRepository: NotesRepository,
+        private val userDataRepository: UserDataRepository,
         equalizerManager: EqualizerManager,
     ) : ViewModel() {
         val playerState: StateFlow<PlayerState> = playerController.playerState
+
+        val useAnimations: StateFlow<Boolean> =
+            userDataRepository.userData
+                .map { it.useAnimations }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = false,
+                )
 
         val isEqualizerAvailable: StateFlow<Boolean> =
             equalizerManager.state

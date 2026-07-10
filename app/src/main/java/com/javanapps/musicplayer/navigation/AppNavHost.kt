@@ -1,7 +1,5 @@
 package com.javanapps.musicplayer.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -27,11 +25,9 @@ import com.javanapps.musicplayer.feature.playlists.navigation.navigateToSmartPla
 import com.javanapps.musicplayer.feature.playlists.playlistsScreen
 import com.javanapps.musicplayer.feature.settings.settingsScreen
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    sharedTransitionScope: SharedTransitionScope,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -74,7 +70,6 @@ fun AppNavHost(
         playerScreen(
             onBack = { navController.popBackStack() },
             onEqualizerClick = { navController.navigateToEqualizer() },
-            sharedTransitionScope = sharedTransitionScope,
         )
         playlistsScreen(
             onPlaylistClick = { playlistId -> navController.navigateToPlaylistDetail(playlistId) },

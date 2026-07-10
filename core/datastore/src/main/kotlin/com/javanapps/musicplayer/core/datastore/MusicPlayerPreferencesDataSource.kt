@@ -57,6 +57,7 @@ class MusicPlayerPreferencesDataSource
                                 ?.mapNotNull { it.toShortOrNull() }
                                 ?: emptyList(),
                         equalizerPreset = preferences[Keys.EQUALIZER_PRESET] ?: -1,
+                        useAnimations = preferences[Keys.USE_ANIMATIONS] ?: false,
                     )
                 }
 
@@ -128,6 +129,12 @@ class MusicPlayerPreferencesDataSource
             }
         }
 
+        suspend fun setUseAnimations(useAnimations: Boolean) {
+            dataStore.edit { preferences ->
+                preferences[Keys.USE_ANIMATIONS] = useAnimations
+            }
+        }
+
         private object Keys {
             val SHUFFLE_MODE = booleanPreferencesKey("shuffle_mode")
             val REPEAT_MODE = stringPreferencesKey("repeat_mode")
@@ -141,6 +148,7 @@ class MusicPlayerPreferencesDataSource
             val EQUALIZER_ENABLED = booleanPreferencesKey("equalizer_enabled")
             val EQUALIZER_BAND_LEVELS = stringPreferencesKey("equalizer_band_levels")
             val EQUALIZER_PRESET = intPreferencesKey("equalizer_preset")
+            val USE_ANIMATIONS = booleanPreferencesKey("use_animations")
         }
     }
 
@@ -157,4 +165,5 @@ data class UserPreferences(
     val equalizerEnabled: Boolean = false,
     val equalizerBandLevels: List<Short> = emptyList(),
     val equalizerPreset: Int = -1,
+    val useAnimations: Boolean = false,
 )

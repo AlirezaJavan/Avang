@@ -8,9 +8,12 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import com.javanapps.musicplayer.core.common.dispatcher.di.ApplicationScope
 import com.javanapps.musicplayer.core.data.worker.AnalysisScheduler
 import com.javanapps.musicplayer.util.ProfileVerifierLogger
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -30,6 +33,10 @@ class MyApplication :
     @Inject
     lateinit var analysisScheduler: AnalysisScheduler
 
+    @Inject
+    @ApplicationScope
+    lateinit var applicationScope: CoroutineScope
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 
@@ -37,8 +44,10 @@ class MyApplication :
         super.onCreate()
         setStrictModePolicy()
         profileVerifierLogger()
-        analysisScheduler.enqueue()
-        analysisScheduler.enqueuePeriodic()
+        applicationScope.launch {
+            analysisScheduler.enqueue()
+            analysisScheduler.enqueuePeriodic()
+        }
     }
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
@@ -51,7 +60,9 @@ class MyApplication :
                 StrictMode.ThreadPolicy
                     .Builder()
                     .detectAll()
+                    .permitDiskReads() // Workaround for Media3/MediaSession disk read violations during metadata updates
                     .penaltyLog()
+                    .penaltyFlashScreen()
                     .build(),
             )
             StrictMode.setVmPolicy(

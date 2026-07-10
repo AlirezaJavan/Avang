@@ -26,6 +26,7 @@
     <string name="core_ui_artist_details">Artist details</string>
     <string name="core_ui_permission_rationale">To play music, the app needs access to your audio files.</string>
     <string name="core_ui_permission_required">Permission required</string>
+    <string name="core_ui_permission_description">Avang needs access to your audio files to display and play your music library.</string>
     <string name="core_ui_grant_permission">Grant permission</string>
     <string name="core_ui_artist_album_count">%1$s • %2$d songs</string>
     <string name="core_ui_artist_album_track_count">%1$d albums • %2$d songs</string>
@@ -64,6 +65,7 @@
     <string name="core_ui_theme_light">Light</string>
     <string name="core_ui_theme_dark">Dark</string>
     <string name="core_ui_dynamic_color">Dynamic Color</string>
+    <string name="core_ui_use_animations">Enable Animations</string>
     <string name="core_ui_language">Language</string>
     <string name="core_ui_language_en">English</string>
     <string name="core_ui_language_fa">Persian (فارسی)</string>

@@ -2,6 +2,7 @@ package com.javanapps.musicplayer.feature.library
 
 import android.Manifest
 import android.os.Build
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -61,6 +63,7 @@ import com.javanapps.musicplayer.core.model.Playlist
 import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.ui.component.ArtworkImage
 import com.javanapps.musicplayer.core.ui.component.EmptyState
+import com.javanapps.musicplayer.core.ui.component.PermissionContent
 import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.ShimmerBox
 import com.javanapps.musicplayer.core.ui.component.SongRow
@@ -129,6 +132,18 @@ internal fun LibraryScreen(
             var songToAddToPlaylist by remember { mutableStateOf<Song?>(null) }
             var songToAddNote by remember { mutableStateOf<Song?>(null) }
 
+            val onSongClickStable =
+                remember(onSongClick) {
+                    { mediaId: String ->
+                        viewModel.play(mediaId)
+                        onSongClick(mediaId)
+                    }
+                }
+            val onToggleFavoriteStable = remember { { id: Long -> viewModel.toggleFavorite(id) } }
+            val onPlayNextStable = remember { { song: Song -> viewModel.playNext(song) } }
+            val onAddToQueueStable = remember { { song: Song -> viewModel.addToQueue(song) } }
+            val onRefreshStable = remember { { viewModel.refresh() } }
+
             LibraryScreen(
                 uiState = uiState,
                 searchQuery = searchQuery,
@@ -136,21 +151,18 @@ internal fun LibraryScreen(
                 favoriteSongIds = favoriteSongIds,
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onSortOrderChanged = viewModel::onSortOrderChanged,
-                onSongClick = { mediaId ->
-                    viewModel.play(mediaId)
-                    onSongClick(mediaId)
-                },
+                onSongClick = onSongClickStable,
                 onAlbumClick = onAlbumClick,
                 onArtistClick = onArtistClick,
-                onToggleFavorite = viewModel::toggleFavorite,
-                onPlayNext = viewModel::playNext,
-                onAddToQueue = viewModel::addToQueue,
+                onToggleFavorite = onToggleFavoriteStable,
+                onPlayNext = onPlayNextStable,
+                onAddToQueue = onAddToQueueStable,
                 onAddToPlaylistClick = { songToAddToPlaylist = it },
                 onAddNoteClick = { song ->
                     viewModel.selectSongForNote(song.id)
                     songToAddNote = song
                 },
-                onRefresh = viewModel::refresh,
+                onRefresh = onRefreshStable,
             )
 
             if (songToAddToPlaylist != null) {
@@ -179,10 +191,25 @@ internal fun LibraryScreen(
                 )
             }
         } else {
-            PermissionRationale(
-                shouldShowRationale = permissionState.status.shouldShowRationale,
-                onRequestPermission = { permissionState.launchPermissionRequest() },
-            )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors =
+                                    listOf(
+                                        MaterialTheme.colorScheme.surface,
+                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                    ),
+                            ),
+                        ),
+            ) {
+                PermissionContent(
+                    shouldShowRationale = permissionState.status.shouldShowRationale,
+                    onRequestPermission = { permissionState.launchPermissionRequest() },
+                )
+            }
         }
     }
 }
@@ -392,18 +419,25 @@ private fun SongsList(
             contentType = { "song" },
         ) { song ->
             val isFavorite = song.id in favoriteSongIds
+            val onSongClickItem = remember(song.mediaId, onSongClick) { { onSongClick(song.mediaId) } }
+            val onFavoriteClickItem = remember(song.id, onToggleFavorite) { { onToggleFavorite(song.id) } }
+            val onPlayNextItem = remember(song.id, onPlayNext) { { onPlayNext(song) } }
+            val onAddToQueueItem = remember(song.id, onAddToQueue) { { onAddToQueue(song) } }
+            val onAddToPlaylistClickItem = remember(song.id, onAddToPlaylistClick) { { onAddToPlaylistClick(song) } }
+            val onAddNoteClickItem = remember(song.id, onAddNoteClick) { { onAddNoteClick(song) } }
+
             SongRow(
                 song = song,
-                onClick = { onSongClick(song.mediaId) },
+                onClick = onSongClickItem,
                 modifier = Modifier.animateItem(),
                 trailingContent = {
                     SongOverflowMenu(
                         isFavorite = isFavorite,
-                        onFavoriteClick = { onToggleFavorite(song.id) },
-                        onPlayNextClick = { onPlayNext(song) },
-                        onAddToQueueClick = { onAddToQueue(song) },
-                        onAddToPlaylistClick = { onAddToPlaylistClick(song) },
-                        onAddNoteClick = { onAddNoteClick(song) },
+                        onFavoriteClick = onFavoriteClickItem,
+                        onPlayNextClick = onPlayNextItem,
+                        onAddToQueueClick = onAddToQueueItem,
+                        onAddToPlaylistClick = onAddToPlaylistClickItem,
+                        onAddNoteClick = onAddNoteClickItem,
                     )
                 },
             )
@@ -781,36 +815,6 @@ private fun AddToPlaylistDialog(
             }
         },
     )
-}
-
-@Composable
-private fun PermissionRationale(
-    shouldShowRationale: Boolean,
-    onRequestPermission: () -> Unit,
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp),
-        ) {
-            Text(
-                text =
-                    if (shouldShowRationale) {
-                        stringResource(CoreUiR.string.core_ui_permission_rationale)
-                    } else {
-                        stringResource(CoreUiR.string.core_ui_permission_required)
-                    },
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
-            Button(onClick = onRequestPermission) {
-                Text(stringResource(CoreUiR.string.core_ui_grant_permission))
-            }
-        }
-    }
 }
 
 private enum class LibraryTab(

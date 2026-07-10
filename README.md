@@ -5,7 +5,7 @@ Now-in-Android-style modular architecture.
 
 - **Min SDK:** 29 · **Target/Compile SDK:** 37
 - **Default language:** Persian (فارسی) — configurable at build time
-- **Theme:** Liquid-glass (Material 3 + Haze blur)
+- **Theme:** Liquid-glass (Material 3)
 - **Audio engine:** Media3 (ExoPlayer + MediaSession)
 - **No INTERNET permission** — 100% offline
 
@@ -27,7 +27,7 @@ Now-in-Android-style modular architecture.
 - Dynamic per-app language switching (Persian / English), bundled Vazir font for correct
   Persian glyph shaping
 - System / light / dark theme with dynamic color (Android 12+)
-- Liquid-glass design with frosted blur surfaces
+- Liquid-glass design
 - Library sync and smart-playlist analysis run as a foreground service (with progress
   notification) and are kept up to date by a periodic background worker
 

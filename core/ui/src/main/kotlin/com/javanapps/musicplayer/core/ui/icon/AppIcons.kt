@@ -61,6 +61,39 @@ object AppIcons {
         }
     }
 
+    val Animation: ImageVector by lazy {
+        materialIcon(name = "Filled.Animation") {
+            materialPath {
+                moveTo(13.28f, 7.5f)
+                curveToRelative(0.0f, 0.82f, -0.67f, 1.5f, -1.5f, 1.5f)
+                reflectiveCurveToRelative(-1.5f, -0.68f, -1.5f, -1.5f)
+                reflectiveCurveToRelative(0.67f, -1.5f, 1.5f, -1.5f)
+                reflectiveCurveToRelative(1.5f, 0.67f, 1.5f, 1.5f)
+                close()
+                moveTo(12.0f, 18.0f)
+                curveToRelative(-4.41f, 0.0f, -8.0f, -3.59f, -8.0f, -8.0f)
+                reflectiveCurveToRelative(3.59f, -8.0f, 8.0f, -8.0f)
+                reflectiveCurveToRelative(8.0f, 3.59f, 8.0f, 8.0f)
+                reflectiveCurveToRelative(-3.59f, 8.0f, -8.0f, 8.0f)
+                close()
+                moveTo(12.0f, 4.0f)
+                curveToRelative(-3.31f, 0.0f, -6.0f, 2.69f, -6.0f, 6.0f)
+                reflectiveCurveToRelative(2.69f, 6.0f, 6.0f, 6.0f)
+                reflectiveCurveToRelative(6.0f, -2.69f, 6.0f, -6.0f)
+                reflectiveCurveToRelative(-2.69f, -6.0f, -6.0f, -6.0f)
+                close()
+                moveTo(12.0f, 22.0f)
+                curveToRelative(4.97f, 0.0f, 9.0f, -4.03f, 9.0f, -9.0f)
+                horizontalLineToRelative(-2.0f)
+                curveToRelative(0.0f, 3.87f, -3.13f, 7.0f, -7.0f, 7.0f)
+                reflectiveCurveToRelative(-7.0f, -3.13f, -7.0f, -7.0f)
+                lineTo(3.0f, 13.0f)
+                curveToRelative(0.0f, 4.97f, 4.03f, 9.0f, 9.0f, 9.0f)
+                close()
+            }
+        }
+    }
+
     val Equalizer: ImageVector by lazy {
         materialIcon(name = "Filled.Equalizer") {
             materialPath {

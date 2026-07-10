@@ -17,5 +17,4 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.ui)
     implementation(libs.kotlinx.coroutines.guava)
-    implementation(libs.dev.chrisbanes.haze)
 }

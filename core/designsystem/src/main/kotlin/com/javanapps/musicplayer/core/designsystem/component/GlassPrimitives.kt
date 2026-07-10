@@ -15,16 +15,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun GlassSurface(
-    hazeState: HazeState,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.medium,
-    color: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+    color: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
     content: @Composable () -> Unit,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -36,8 +32,7 @@ fun GlassSurface(
                     shape = shape,
                     ambientColor = primaryColor.copy(alpha = 0.15f),
                     spotColor = primaryColor.copy(alpha = 0.25f),
-                ).hazeEffect(state = hazeState)
-                .border(
+                ).border(
                     width = 1.dp,
                     brush =
                         Brush.verticalGradient(
@@ -57,15 +52,13 @@ fun GlassSurface(
 
 @Composable
 fun GlassScaffold(
-    hazeState: HazeState,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .hazeSource(state = hazeState),
+                .fillMaxSize(),
         color = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
@@ -75,7 +68,6 @@ fun GlassScaffold(
 
 @Composable
 fun GlassBottomBar(
-    hazeState: HazeState,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -83,7 +75,6 @@ fun GlassBottomBar(
     NavigationBar(
         modifier =
             modifier
-                .hazeEffect(state = hazeState)
                 .drawBehind {
                     drawLine(
                         color = topBorderColor,
@@ -92,7 +83,7 @@ fun GlassBottomBar(
                         strokeWidth = 1.dp.toPx(),
                     )
                 },
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
         content = content,
     )
 }

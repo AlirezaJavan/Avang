@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private val ALBUM_ART_URI = Uri.parse("content://media/external/audio/albumart")
@@ -36,7 +37,9 @@ class MediaStoreDataSource
                 val observer =
                     object : ContentObserver(null) {
                         override fun onChange(selfChange: Boolean) {
-                            trySend(querySongs())
+                            launch {
+                                send(querySongs())
+                            }
                         }
                     }
                 contentResolver.registerContentObserver(
@@ -146,7 +149,9 @@ class MediaStoreDataSource
                 val observer =
                     object : ContentObserver(null) {
                         override fun onChange(selfChange: Boolean) {
-                            trySend(queryAlbums())
+                            launch {
+                                send(queryAlbums())
+                            }
                         }
                     }
                 contentResolver.registerContentObserver(
@@ -207,7 +212,9 @@ class MediaStoreDataSource
                 val observer =
                     object : ContentObserver(null) {
                         override fun onChange(selfChange: Boolean) {
-                            trySend(queryArtists())
+                            launch {
+                                send(queryArtists())
+                            }
                         }
                     }
                 contentResolver.registerContentObserver(
