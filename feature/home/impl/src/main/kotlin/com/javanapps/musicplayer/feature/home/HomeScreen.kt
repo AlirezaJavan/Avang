@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -34,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +59,7 @@ import com.javanapps.musicplayer.core.model.PlayerState
 import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.ui.component.ArtworkImage
 import com.javanapps.musicplayer.core.ui.component.EmptyState
+import com.javanapps.musicplayer.core.ui.component.NotificationPermissionBanner
 import com.javanapps.musicplayer.core.ui.component.PermissionContent
 import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.ShimmerBox
@@ -110,13 +113,18 @@ internal fun HomeScreen(
                 }
             }
 
-        HomeScreen(
-            uiState = uiState,
-            onSongClick = onSongClickStable,
-            onHeroClick = onSongClick,
-            onPlayPauseClick = onPlayPauseClickStable,
-            modifier = modifier,
-        )
+        Column(modifier = modifier.fillMaxSize()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                NotificationPermissionRow()
+            }
+            HomeScreen(
+                uiState = uiState,
+                onSongClick = onSongClickStable,
+                onHeroClick = onSongClick,
+                onPlayPauseClick = onPlayPauseClickStable,
+                modifier = Modifier.weight(1f),
+            )
+        }
     } else {
         Box(
             modifier =
@@ -137,6 +145,22 @@ internal fun HomeScreen(
                 onRequestPermission = { permissionState.launchPermissionRequest() },
             )
         }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun NotificationPermissionRow(modifier: Modifier = Modifier) {
+    val notificationPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+    var dismissed by rememberSaveable { mutableStateOf(false) }
+
+    if (!dismissed && !notificationPermissionState.status.isGranted) {
+        NotificationPermissionBanner(
+            shouldShowRationale = notificationPermissionState.status.shouldShowRationale,
+            onRequestPermission = { notificationPermissionState.launchPermissionRequest() },
+            onDismiss = { dismissed = true },
+            modifier = modifier.fillMaxWidth().wrapContentHeight().padding(16.dp),
+        )
     }
 }
 

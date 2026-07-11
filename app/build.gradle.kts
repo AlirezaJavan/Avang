@@ -99,6 +99,7 @@ dependencies {
     implementation(libs.coil.core)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.accompanist.permissions)
 
     // Media3
     implementation(libs.androidx.media3.exoplayer)

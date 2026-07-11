@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.javanapps.musicplayer.core.database.model.AnalyzedSongEntity
 import com.javanapps.musicplayer.core.database.model.LabelCount
 import com.javanapps.musicplayer.core.database.model.SongTagEntity
 import kotlinx.coroutines.flow.Flow
@@ -29,11 +30,14 @@ interface SongTagDao {
     @Query("SELECT DISTINCT label FROM song_tags ORDER BY label ASC")
     fun getAllLabels(): Flow<List<String>>
 
-    @Query("SELECT DISTINCT song_id FROM song_tags")
+    @Query("SELECT song_id FROM analyzed_songs")
     suspend fun getAnalyzedSongIds(): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(tags: List<SongTagEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun markAnalyzed(analyzed: AnalyzedSongEntity)
 
     @Query("DELETE FROM song_tags WHERE song_id = :songId")
     suspend fun deleteForSong(songId: Long)
@@ -42,11 +46,22 @@ interface SongTagDao {
     suspend fun replaceForSong(
         songId: Long,
         tags: List<SongTagEntity>,
+        analyzedAt: Long,
     ) {
         deleteForSong(songId)
         upsert(tags)
+        markAnalyzed(AnalyzedSongEntity(songId, analyzedAt))
     }
 
     @Query("DELETE FROM song_tags")
-    suspend fun clearAll()
+    suspend fun clearAllTags()
+
+    @Query("DELETE FROM analyzed_songs")
+    suspend fun clearAllAnalyzed()
+
+    @Transaction
+    suspend fun clearAll() {
+        clearAllTags()
+        clearAllAnalyzed()
+    }
 }

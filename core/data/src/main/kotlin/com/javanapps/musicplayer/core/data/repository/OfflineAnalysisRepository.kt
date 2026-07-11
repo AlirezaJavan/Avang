@@ -4,6 +4,7 @@ import android.net.Uri
 import com.javanapps.musicplayer.core.analysis.SongAnalyzer
 import com.javanapps.musicplayer.core.common.dispatcher.Dispatcher
 import com.javanapps.musicplayer.core.common.dispatcher.MusicPlayerDispatchers.Default
+import com.javanapps.musicplayer.core.data.worker.AnalysisScheduler
 import com.javanapps.musicplayer.core.database.dao.SongTagDao
 import com.javanapps.musicplayer.core.database.model.asEntity
 import com.javanapps.musicplayer.core.domain.repository.AnalysisRepository
@@ -12,6 +13,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class OfflineAnalysisRepository
@@ -19,6 +21,7 @@ class OfflineAnalysisRepository
     constructor(
         private val songAnalyzer: SongAnalyzer,
         private val songTagDao: SongTagDao,
+        private val analysisScheduler: AnalysisScheduler,
         @Dispatcher(Default) private val defaultDispatcher: CoroutineDispatcher,
     ) : AnalysisRepository {
         override suspend fun analyzeSong(
@@ -27,7 +30,7 @@ class OfflineAnalysisRepository
         ) {
             val tags = songAnalyzer.analyze(songId, Uri.parse(mediaUri))
             val analyzedAt = System.currentTimeMillis()
-            songTagDao.replaceForSong(songId, tags.map { it.asEntity(analyzedAt) })
+            songTagDao.replaceForSong(songId, tags.map { it.asEntity(analyzedAt) }, analyzedAt)
         }
 
         override suspend fun analyzedSongIds(): Set<Long> = songTagDao.getAnalyzedSongIds().toSet()
@@ -52,4 +55,10 @@ class OfflineAnalysisRepository
                 }.flowOn(defaultDispatcher)
 
         override suspend fun clearAll() = songTagDao.clearAll()
+
+        override suspend fun rescanAll() =
+            withContext(defaultDispatcher) {
+                songTagDao.clearAll()
+                analysisScheduler.enqueue(replace = true)
+            }
     }

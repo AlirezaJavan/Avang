@@ -16,15 +16,22 @@ class AnalysisScheduler
     constructor(
         @ApplicationContext private val context: Context,
     ) {
-        /** Analyzes right away, e.g. right after a manual library refresh. */
-        fun enqueue() {
+        /**
+         * Analyzes right away, e.g. right after a manual library refresh.
+         *
+         * [replace] cancels any in-flight analysis and starts a fresh run instead of leaving it
+         * be — needed for an explicit "start over" action, where a stale in-flight run would
+         * otherwise have already computed its pending-songs list before a rescan cleared it.
+         */
+        fun enqueue(replace: Boolean = false) {
             val request =
                 OneTimeWorkRequestBuilder<AnalyzeLibraryWorker>()
                     .setConstraints(analysisConstraints())
                     .build()
+            val policy = if (replace) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP
             WorkManager
                 .getInstance(context)
-                .enqueueUniqueWork(AnalyzeLibraryWorker.UNIQUE_NAME, ExistingWorkPolicy.KEEP, request)
+                .enqueueUniqueWork(AnalyzeLibraryWorker.UNIQUE_NAME, policy, request)
         }
 
         /**

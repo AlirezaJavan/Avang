@@ -3,6 +3,7 @@ package com.javanapps.musicplayer.core.database.di
 import android.content.Context
 import androidx.room.Room
 import com.javanapps.musicplayer.core.database.MIGRATION_1_2
+import com.javanapps.musicplayer.core.database.MIGRATION_2_3
 import com.javanapps.musicplayer.core.database.MusicDatabase
 import dagger.Module
 import dagger.Provides
@@ -24,7 +25,7 @@ object DatabaseModule {
                 context,
                 MusicDatabase::class.java,
                 "music-database",
-            ).addMigrations(MIGRATION_1_2)
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides

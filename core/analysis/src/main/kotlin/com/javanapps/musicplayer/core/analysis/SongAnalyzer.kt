@@ -2,10 +2,8 @@ package com.javanapps.musicplayer.core.analysis
 
 import android.net.Uri
 import android.util.Log
-import com.javanapps.musicplayer.core.analysis.classify.MetadataTagger
 import com.javanapps.musicplayer.core.analysis.classify.TagClassifier
 import com.javanapps.musicplayer.core.analysis.decode.AudioDecoder
-import com.javanapps.musicplayer.core.analysis.dsp.FeatureExtractor
 import com.javanapps.musicplayer.core.analysis.metadata.MetadataExtractor
 import com.javanapps.musicplayer.core.common.dispatcher.Dispatcher
 import com.javanapps.musicplayer.core.common.dispatcher.MusicPlayerDispatchers.IO
@@ -18,9 +16,7 @@ class SongAnalyzer
     @Inject
     constructor(
         private val decoder: AudioDecoder,
-        private val featureExtractor: FeatureExtractor,
         private val metadataExtractor: MetadataExtractor,
-        private val metadataTagger: MetadataTagger,
         private val classifier: TagClassifier,
         @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     ) {
@@ -40,21 +36,19 @@ class SongAnalyzer
                 val decodeTime = System.currentTimeMillis() - dStart
 
                 if (pcm == null) {
-                    return@withContext metadataTagger.tag(songId, metadata)
+                    Log.w("SongAnalyzer", "Song $songId: decode failed, skipping classification for $mediaUri")
+                    return@withContext emptyList()
                 }
 
-                val fStart = System.currentTimeMillis()
-                val features = featureExtractor.extract(pcm)
-                val featuresTime = System.currentTimeMillis() - fStart
-
                 val cStart = System.currentTimeMillis()
-                val result = classifier.classify(songId, pcm, features, metadata)
+                val result = classifier.classify(songId, pcm, metadata)
                 val classifyTime = System.currentTimeMillis() - cStart
 
                 val total = System.currentTimeMillis() - start
                 Log.d(
                     "SongAnalyzer",
-                    "Analyzed song $songId: Total ${total}ms (Metadata: ${metadataTime}ms, Decode: ${decodeTime}ms, Features: ${featuresTime}ms, Classify: ${classifyTime}ms)",
+                    "Analyzed song $songId: Total ${total}ms (Metadata: ${metadataTime}ms, Decode: ${decodeTime}ms, " +
+                        "Classify: ${classifyTime}ms), tags: ${result.joinToString { it.label }.ifEmpty { "(none)" }}",
                 )
 
                 result

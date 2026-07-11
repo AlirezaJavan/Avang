@@ -1,6 +1,8 @@
 package com.javanapps.musicplayer
 
+import android.Manifest
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +20,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +40,9 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.javanapps.musicplayer.core.designsystem.component.GlassBottomBar
 import com.javanapps.musicplayer.core.designsystem.component.GlassScaffold
 import com.javanapps.musicplayer.core.designsystem.theme.AuroraBackground
@@ -113,9 +119,27 @@ private data class ThemeSettings(
 
 private fun Configuration.isSystemInDarkTheme() = (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun MusicPlayerApp(viewModel: MainViewModel) {
     val navController = rememberNavController()
+
+    val audioPermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+    val audioPermissionState = rememberPermissionState(audioPermission)
+
+    // Starts (incremental — already-analyzed songs are skipped) library analysis as soon as the
+    // app opens with permission already granted, rather than waiting for the user to visit a
+    // specific screen. Re-fires if the permission is granted later in this same session too.
+    LaunchedEffect(audioPermissionState.status.isGranted) {
+        if (audioPermissionState.status.isGranted) {
+            viewModel.syncLibrary()
+        }
+    }
 
     val playerStateFlow = viewModel.playerState
     val stableStateFlow =

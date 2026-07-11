@@ -52,4 +52,12 @@ class FakeAnalysisRepository : AnalysisRepository {
         tags.clear()
         flow.tryEmit(Unit)
     }
+
+    var rescanAllCallCount = 0
+        private set
+
+    override suspend fun rescanAll() {
+        rescanAllCallCount++
+        clearAll()
+    }
 }

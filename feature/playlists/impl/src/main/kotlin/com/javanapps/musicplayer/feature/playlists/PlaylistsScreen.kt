@@ -37,7 +37,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,16 +70,21 @@ import kotlin.math.absoluteValue
 import androidx.compose.foundation.lazy.grid.items as gridItems
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
+// Genre labels beyond this curated set (see LabelMap) fall back to a hashed color below,
+// so every genre still gets a stable, distinct card color without listing all of them here.
 private val smartPlaylistCardColors =
     mapOf(
-        "80s" to Color(0xFF7C3AED),
-        "90s" to Color(0xFFD946EF),
-        "Acoustic" to Color(0xFFD97706),
-        "Classical" to Color(0xFF4F46E5),
-        "Dance" to Color(0xFF0EA5E9),
-        "Energetic" to Color(0xFFEA580C),
-        "Rock" to Color(0xFFE11D48),
-        "Pop" to Color(0xFF059669),
+        "Pop" to Color(0xFFFACC15),
+        "Rock" to Color(0xFFDC2626),
+        "Metal" to Color(0xFF52525B),
+        "Jazz" to Color(0xFFEA580C),
+        "Classical" to Color(0xFF0EA5E9),
+        "Electronic" to Color(0xFF8B5CF6),
+        "Hip-Hop" to Color(0xFF6366F1),
+        "R&B" to Color(0xFFEC4899),
+        "Country" to Color(0xFFCA8A04),
+        "Reggae" to Color(0xFF22C55E),
+        "Blues" to Color(0xFF1D4ED8),
     )
 
 private val fallbackCardColors =
@@ -96,20 +100,6 @@ private val fallbackCardColors =
 private fun smartPlaylistColor(label: String): Color =
     smartPlaylistCardColors[label]
         ?: fallbackCardColors[label.hashCode().absoluteValue % fallbackCardColors.size]
-
-@Composable
-private fun localizedSmartLabel(label: String): String =
-    when (label) {
-        "80s" -> stringResource(CoreUiR.string.core_ui_label_80s)
-        "90s" -> stringResource(CoreUiR.string.core_ui_label_90s)
-        "Acoustic" -> stringResource(CoreUiR.string.core_ui_label_acoustic)
-        "Classical" -> stringResource(CoreUiR.string.core_ui_label_classical)
-        "Dance" -> stringResource(CoreUiR.string.core_ui_label_dance)
-        "Energetic" -> stringResource(CoreUiR.string.core_ui_label_energetic)
-        "Rock" -> stringResource(CoreUiR.string.core_ui_label_rock)
-        "Pop" -> stringResource(CoreUiR.string.core_ui_label_pop)
-        else -> label
-    }
 
 fun NavGraphBuilder.playlistsScreen(
     onPlaylistClick: (Long) -> Unit,
@@ -137,10 +127,6 @@ internal fun PlaylistsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.scan()
-    }
-
     PlaylistsScreen(
         uiState = uiState,
         onPlaylistClick = onPlaylistClick,
@@ -149,6 +135,7 @@ internal fun PlaylistsScreen(
         onDeletePlaylist = viewModel::deletePlaylist,
         onRenamePlaylist = viewModel::renamePlaylist,
         onScan = viewModel::scan,
+        onRetry = viewModel::retryAnalysis,
         modifier = modifier,
     )
 }
@@ -162,9 +149,11 @@ internal fun PlaylistsScreen(
     onDeletePlaylist: (Long) -> Unit,
     onRenamePlaylist: (Long, String) -> Unit,
     onScan: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
+    var showRetryConfirmDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -173,10 +162,10 @@ internal fun PlaylistsScreen(
             ScreenHeader(
                 title = stringResource(CoreUiR.string.core_ui_playlists),
                 actions = {
-                    IconButton(onClick = onScan) {
+                    IconButton(onClick = { showRetryConfirmDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = stringResource(CoreUiR.string.core_ui_scan),
+                            contentDescription = stringResource(CoreUiR.string.core_ui_retry_analysis),
                         )
                     }
                 },
@@ -252,6 +241,29 @@ internal fun PlaylistsScreen(
             onConfirm = { name ->
                 onCreatePlaylist(name)
                 showCreateDialog = false
+            },
+        )
+    }
+
+    if (showRetryConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showRetryConfirmDialog = false },
+            title = { Text(stringResource(CoreUiR.string.core_ui_retry_analysis)) },
+            text = { Text(stringResource(CoreUiR.string.core_ui_retry_analysis_confirmation)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onRetry()
+                        showRetryConfirmDialog = false
+                    },
+                ) {
+                    Text(stringResource(CoreUiR.string.core_ui_retry_analysis))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRetryConfirmDialog = false }) {
+                    Text(stringResource(CoreUiR.string.core_ui_cancel))
+                }
             },
         )
     }
@@ -408,7 +420,6 @@ private fun SmartPlaylistCard(
     onClick: () -> Unit,
 ) {
     val cardColor = smartPlaylistColor(smartPlaylist.label)
-    val localizedLabel = localizedSmartLabel(smartPlaylist.label)
 
     val shape = RoundedCornerShape(24.dp)
     val gradient =
@@ -449,7 +460,7 @@ private fun SmartPlaylistCard(
             verticalArrangement = Arrangement.Bottom,
         ) {
             Text(
-                text = localizedLabel,
+                text = smartPlaylist.label,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -592,7 +603,7 @@ internal fun SmartPlaylistDetailScreen(
     Column(modifier = modifier.fillMaxSize()) {
         val rawLabel = (uiState as? SmartPlaylistDetailUiState.Success)?.label.orEmpty()
         ScreenHeader(
-            title = if (rawLabel.isEmpty()) "" else localizedSmartLabel(rawLabel),
+            title = rawLabel,
             onBack = onBack,
         )
 

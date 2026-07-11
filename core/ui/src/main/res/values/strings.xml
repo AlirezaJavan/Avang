@@ -28,6 +28,9 @@
     <string name="core_ui_permission_required">دسترسی مورد نیاز است</string>
     <string name="core_ui_permission_description">آوانگ برای نمایش و پخش موسیقی‌های دستگاه شما، به اجازه دسترسی به فایل‌های صوتی نیاز دارد.</string>
     <string name="core_ui_grant_permission">اجازه دسترسی</string>
+    <string name="core_ui_notification_permission_title">از پیشرفت هماهنگ‌سازی کتابخانه باخبر شوید</string>
+    <string name="core_ui_notification_permission_description">اعلان‌ها را فعال کنید تا در حین تحلیل و دسته‌بندی کتابخانه، پیشرفت کار را ببینید.</string>
+    <string name="core_ui_notification_permission_rationale">اعلان‌ها به شما امکان می‌دهند پیشرفت تحلیل کتابخانه را دنبال کنید. می‌توانید آن‌ها را از تنظیمات سیستم فعال کنید.</string>
     <string name="core_ui_artist_album_count">%1$s • %2$d آهنگ</string>
     <string name="core_ui_artist_album_track_count">%1$d آلبوم • %2$d آهنگ</string>
     <string name="core_ui_shuffle">بر زدن</string>
@@ -74,18 +77,12 @@
     <string name="core_ui_song_count">%d آهنگ</string>
     <string name="core_ui_my_playlists">پلی‌لیست‌های من</string>
     <string name="core_ui_automatic_playlists">پلی‌لیست‌های خودکار</string>
-    <string name="core_ui_label_80s">دهه ۸۰</string>
-    <string name="core_ui_label_90s">دهه ۹۰</string>
-    <string name="core_ui_label_acoustic">آکوستیک</string>
-    <string name="core_ui_label_classical">کلاسیک</string>
-    <string name="core_ui_label_dance">رقص</string>
-    <string name="core_ui_label_energetic">پرانرژی</string>
-    <string name="core_ui_label_rock">راک</string>
-    <string name="core_ui_label_pop">پاپ</string>
     <string name="core_ui_scan">اسکن</string>
     <string name="core_ui_home">خانه</string>
     <string name="core_ui_recently_played">اخیراً پخش شده</string>
     <string name="core_ui_most_played">پرتکرارترین‌ها</string>
     <string name="core_ui_recently_added">به‌تازگی اضافه شده</string>
     <string name="core_ui_smart_playlists_not_analyzed">آهنگ‌ها هنوز تحلیل نشده‌اند تا لیست‌های پخش خودکار ایجاد شوند.</string>
+    <string name="core_ui_retry_analysis">تحلیل مجدد</string>
+    <string name="core_ui_retry_analysis_confirmation">این کار همه پلی‌لیست‌های خودکار را حذف کرده و آهنگ‌ها را از ابتدا دوباره تحلیل می‌کند. ادامه می‌دهید؟</string>
 </resources>

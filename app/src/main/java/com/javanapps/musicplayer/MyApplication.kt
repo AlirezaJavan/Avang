@@ -44,8 +44,11 @@ class MyApplication :
         super.onCreate()
         setStrictModePolicy()
         profileVerifierLogger()
+        // The one-shot analysis run is triggered from MusicPlayerApp once the read-audio
+        // permission is confirmed granted (see MainActivity) rather than here — this runs before
+        // any permission has necessarily been requested, and a MediaStore query without it would
+        // either throw or return nothing useful.
         applicationScope.launch {
-            analysisScheduler.enqueue()
             analysisScheduler.enqueuePeriodic()
         }
     }

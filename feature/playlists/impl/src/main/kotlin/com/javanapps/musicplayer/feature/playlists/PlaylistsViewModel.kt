@@ -21,7 +21,7 @@ class PlaylistsViewModel
     constructor(
         private val playlistRepository: PlaylistRepository,
         private val songsRepository: SongsRepository,
-        analysisRepository: AnalysisRepository,
+        private val analysisRepository: AnalysisRepository,
     ) : ViewModel() {
         val uiState: StateFlow<PlaylistsUiState> =
             combine(
@@ -63,9 +63,60 @@ class PlaylistsViewModel
                 songsRepository.refresh()
             }
         }
+
+        /** Deletes every auto playlist and re-analyzes the whole library from scratch. */
+        fun retryAnalysis() {
+            viewModelScope.launch {
+                analysisRepository.rescanAll()
+            }
+        }
     }
 
-private val ALLOWED_LABELS = setOf("80s", "90s", "Acoustic", "Classical", "Dance", "Energetic", "Rock", "Pop")
+// Mirrors core:analysis's LabelMap genre display names (not depended on directly, since that
+// module pulls in TFLite/Android decoding internals this feature module has no other need for).
+private val ALLOWED_LABELS =
+    setOf(
+        "Pop",
+        "Hip-Hop",
+        "Rock",
+        "Metal",
+        "Punk",
+        "Grunge",
+        "Progressive Rock",
+        "Rock and Roll",
+        "Psychedelic Rock",
+        "R&B",
+        "Soul",
+        "Reggae",
+        "Country",
+        "Swing",
+        "Bluegrass",
+        "Funk",
+        "Folk",
+        "Jazz",
+        "Disco",
+        "Classical",
+        "Opera",
+        "Electronic",
+        "House",
+        "Techno",
+        "Dubstep",
+        "Drum and Bass",
+        "EDM",
+        "Ambient",
+        "Trance",
+        "Salsa",
+        "Flamenco",
+        "Blues",
+        "New Age",
+        "Afrobeat",
+        "Christian",
+        "Gospel",
+        "Bollywood",
+        "Ska",
+        "Christmas",
+        "Dance",
+    )
 
 sealed interface PlaylistsUiState {
     data object Loading : PlaylistsUiState
