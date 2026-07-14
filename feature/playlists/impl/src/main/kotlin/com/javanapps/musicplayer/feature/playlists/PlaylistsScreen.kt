@@ -70,21 +70,24 @@ import kotlin.math.absoluteValue
 import androidx.compose.foundation.lazy.grid.items as gridItems
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
-// Genre labels beyond this curated set (see LabelMap) fall back to a hashed color below,
-// so every genre still gets a stable, distinct card color without listing all of them here.
+// Covers all 14 top-level genre_discogs400 genres this app tags (see PlaylistsViewModel's
+// ALLOWED_LABELS); anything else falls back to a hashed color below.
 private val smartPlaylistCardColors =
     mapOf(
-        "Pop" to Color(0xFFFACC15),
-        "Rock" to Color(0xFFDC2626),
-        "Metal" to Color(0xFF52525B),
-        "Jazz" to Color(0xFFEA580C),
+        "Blues" to Color(0xFF1D4ED8),
+        "Brass & Military" to Color(0xFFB45309),
+        "Children's" to Color(0xFFF472B6),
         "Classical" to Color(0xFF0EA5E9),
         "Electronic" to Color(0xFF8B5CF6),
-        "Hip-Hop" to Color(0xFF6366F1),
-        "R&B" to Color(0xFFEC4899),
-        "Country" to Color(0xFFCA8A04),
+        "Folk, World, & Country" to Color(0xFFCA8A04),
+        "Funk / Soul" to Color(0xFFEC4899),
+        "Hip Hop" to Color(0xFF6366F1),
+        "Jazz" to Color(0xFFEA580C),
+        "Latin" to Color(0xFFF97316),
+        "Pop" to Color(0xFFFACC15),
         "Reggae" to Color(0xFF22C55E),
-        "Blues" to Color(0xFF1D4ED8),
+        "Rock" to Color(0xFFDC2626),
+        "Stage & Screen" to Color(0xFF52525B),
     )
 
 private val fallbackCardColors =

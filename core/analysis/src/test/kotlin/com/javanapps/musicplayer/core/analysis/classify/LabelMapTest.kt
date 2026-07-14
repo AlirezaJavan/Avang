@@ -5,41 +5,20 @@ import org.junit.Test
 
 class LabelMapTest {
     @Test
-    fun displayName_knownGenreClass_returnsGenreTag() {
-        assertThat(LabelMap.displayName("Jazz")).isEqualTo("Jazz")
-        assertThat(LabelMap.displayName("Reggae")).isEqualTo("Reggae")
-        assertThat(LabelMap.displayName("Hip hop music")).isEqualTo("Hip-Hop")
-        assertThat(LabelMap.displayName("Rhythm and blues")).isEqualTo("R&B")
+    fun topLevelGenre_discogsStyle_returnsGenrePrefix() {
+        assertThat(LabelMap.topLevelGenre("Electronic---Deep House")).isEqualTo("Electronic")
+        assertThat(LabelMap.topLevelGenre("Jazz---Bop")).isEqualTo("Jazz")
+        assertThat(LabelMap.topLevelGenre("Hip Hop---Trap")).isEqualTo("Hip Hop")
+        assertThat(LabelMap.topLevelGenre("Folk, World, & Country---Flamenco")).isEqualTo("Folk, World, & Country")
     }
 
     @Test
-    fun displayName_isCaseInsensitiveAndTrimsWhitespace() {
-        assertThat(LabelMap.displayName("  JAZZ  ")).isEqualTo("Jazz")
+    fun topLevelGenre_nonMusicStyle_returnsNull() {
+        assertThat(LabelMap.topLevelGenre("Non-Music---Spoken Word")).isNull()
     }
 
     @Test
-    fun displayName_moodClass_returnsNull() {
-        assertThat(LabelMap.displayName("Happy music")).isNull()
-        assertThat(LabelMap.displayName("Sad music")).isNull()
-        assertThat(LabelMap.displayName("Angry music")).isNull()
-        assertThat(LabelMap.displayName("Scary music")).isNull()
-    }
-
-    @Test
-    fun displayName_nonMusicAudioSetClass_returnsNull() {
-        assertThat(LabelMap.displayName("Guitar")).isNull()
-        assertThat(LabelMap.displayName("Speech")).isNull()
-        assertThat(LabelMap.displayName("Music")).isNull()
-    }
-
-    @Test
-    fun displayName_unknownLabel_returnsNull() {
-        assertThat(LabelMap.displayName("not a real label")).isNull()
-    }
-
-    @Test
-    fun allDisplayNames_containsMappedGenres() {
-        assertThat(LabelMap.allDisplayNames).contains("Jazz")
-        assertThat(LabelMap.allDisplayNames).doesNotContain("Happy")
+    fun topLevelGenre_labelWithoutSeparator_returnsWholeLabel() {
+        assertThat(LabelMap.topLevelGenre("Pop")).isEqualTo("Pop")
     }
 }

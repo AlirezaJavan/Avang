@@ -72,50 +72,26 @@ class PlaylistsViewModel
         }
     }
 
-// Mirrors core:analysis's LabelMap genre display names (not depended on directly, since that
-// module pulls in TFLite/Android decoding internals this feature module has no other need for).
+// Mirrors core:analysis's LabelMap top-level genres (not depended on directly, since that module
+// pulls in TFLite/Android decoding internals this feature module has no other need for). These
+// are the 15 genre_discogs400 top-level buckets minus "Non-Music", which LabelMap already
+// excludes from tagging.
 private val ALLOWED_LABELS =
     setOf(
-        "Pop",
-        "Hip-Hop",
-        "Rock",
-        "Metal",
-        "Punk",
-        "Grunge",
-        "Progressive Rock",
-        "Rock and Roll",
-        "Psychedelic Rock",
-        "R&B",
-        "Soul",
-        "Reggae",
-        "Country",
-        "Swing",
-        "Bluegrass",
-        "Funk",
-        "Folk",
-        "Jazz",
-        "Disco",
-        "Classical",
-        "Opera",
-        "Electronic",
-        "House",
-        "Techno",
-        "Dubstep",
-        "Drum and Bass",
-        "EDM",
-        "Ambient",
-        "Trance",
-        "Salsa",
-        "Flamenco",
         "Blues",
-        "New Age",
-        "Afrobeat",
-        "Christian",
-        "Gospel",
-        "Bollywood",
-        "Ska",
-        "Christmas",
-        "Dance",
+        "Brass & Military",
+        "Children's",
+        "Classical",
+        "Electronic",
+        "Folk, World, & Country",
+        "Funk / Soul",
+        "Hip Hop",
+        "Jazz",
+        "Latin",
+        "Pop",
+        "Reggae",
+        "Rock",
+        "Stage & Screen",
     )
 
 sealed interface PlaylistsUiState {
