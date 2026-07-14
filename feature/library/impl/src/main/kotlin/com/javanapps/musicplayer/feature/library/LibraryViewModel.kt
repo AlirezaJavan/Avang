@@ -22,12 +22,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val SEARCH_DEBOUNCE_MS = 300L
 
 @HiltViewModel
 class LibraryViewModel
@@ -86,7 +89,9 @@ class LibraryViewModel
                 songsRepository.getSongs(),
                 songsRepository.getAlbums(),
                 songsRepository.getArtists(),
-                _searchQuery,
+                // Empty query (including the initial value) is not debounced, so the screen
+                // isn't held on Loading and clearing the search filters instantly.
+                _searchQuery.debounce { query -> if (query.isEmpty()) 0L else SEARCH_DEBOUNCE_MS },
                 _sortOrder,
             ) { songs, albums, artists, query, sort ->
                 val filteredSongs =

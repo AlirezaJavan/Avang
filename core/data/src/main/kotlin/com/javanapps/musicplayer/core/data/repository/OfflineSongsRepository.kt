@@ -32,42 +32,42 @@ class OfflineSongsRepository
         // Shared for the lifetime of the app: the MediaStore query + ContentObserver run once
         // and are reused by every screen, instead of every Library visit re-querying MediaStore.
         // `by lazy` defers the first call to mediaStoreDataSource until actually needed.
-        private val songs: Flow<List<Song>> by lazy {
+        private val songsFlow: Flow<List<Song>> by lazy {
             mediaStoreDataSource.getSongs().shareIn(applicationScope, SharingStarted.Lazily, replay = 1)
         }
-        private val albums: Flow<List<Album>> by lazy {
+        private val albumsFlow: Flow<List<Album>> by lazy {
             mediaStoreDataSource.getAlbums().shareIn(applicationScope, SharingStarted.Lazily, replay = 1)
         }
-        private val artists: Flow<List<Artist>> by lazy {
+        private val artistsFlow: Flow<List<Artist>> by lazy {
             mediaStoreDataSource.getArtists().shareIn(applicationScope, SharingStarted.Lazily, replay = 1)
         }
 
-        override fun getSongs(): Flow<List<Song>> = songs
+        override fun getSongs(): Flow<List<Song>> = songsFlow
 
         override fun getSong(mediaId: String): Flow<Song?> =
-            songs
+            songsFlow
                 .map { songs ->
                     songs.find { it.mediaId == mediaId }
                 }.flowOn(defaultDispatcher)
 
-        override fun getAlbums(): Flow<List<Album>> = albums
+        override fun getAlbums(): Flow<List<Album>> = albumsFlow
 
-        override fun getArtists(): Flow<List<Artist>> = artists
+        override fun getArtists(): Flow<List<Artist>> = artistsFlow
 
         override fun getSongsByArtist(artistId: Long): Flow<List<Song>> =
-            songs
+            songsFlow
                 .map { songs ->
                     songs.filter { it.artistId == artistId }
                 }.flowOn(defaultDispatcher)
 
         override fun getSongsByAlbum(albumId: Long): Flow<List<Song>> =
-            songs
+            songsFlow
                 .map { songs ->
                     songs.filter { it.albumId == albumId }
                 }.flowOn(defaultDispatcher)
 
         override fun observeRecentlyAdded(limit: Int): Flow<List<Song>> =
-            songs
+            songsFlow
                 .map { songs ->
                     songs.sortedByDescending { it.dateAdded }.take(limit)
                 }.flowOn(defaultDispatcher)
