@@ -32,6 +32,8 @@ interface UserDataRepository {
     suspend fun setEqualizerBandLevels(levels: List<Short>)
 
     suspend fun setEqualizerPreset(preset: Int)
+
+    suspend fun setUseAnimations(useAnimations: Boolean)
 }
 
 data class UserData(
@@ -47,4 +49,5 @@ data class UserData(
     val equalizerEnabled: Boolean = false,
     val equalizerBandLevels: List<Short> = emptyList(),
     val equalizerPreset: Int = -1,
+    val useAnimations: Boolean = false,
 )

@@ -7,6 +7,7 @@ import com.javanapps.musicplayer.core.database.dao.PlayCountDao
 import com.javanapps.musicplayer.core.database.dao.PlaylistDao
 import com.javanapps.musicplayer.core.database.dao.SongNoteDao
 import com.javanapps.musicplayer.core.database.dao.SongTagDao
+import com.javanapps.musicplayer.core.database.model.AnalyzedSongEntity
 import com.javanapps.musicplayer.core.database.model.FavoriteEntity
 import com.javanapps.musicplayer.core.database.model.PlayCountEntity
 import com.javanapps.musicplayer.core.database.model.PlaylistEntity
@@ -22,8 +23,9 @@ import com.javanapps.musicplayer.core.database.model.SongTagEntity
         SongNoteEntity::class,
         PlayCountEntity::class,
         SongTagEntity::class,
+        AnalyzedSongEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class MusicDatabase : RoomDatabase() {

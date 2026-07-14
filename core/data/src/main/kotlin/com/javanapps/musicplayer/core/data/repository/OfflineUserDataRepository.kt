@@ -29,6 +29,7 @@ class OfflineUserDataRepository
                     equalizerEnabled = it.equalizerEnabled,
                     equalizerBandLevels = it.equalizerBandLevels,
                     equalizerPreset = it.equalizerPreset,
+                    useAnimations = it.useAnimations,
                 )
             }
 
@@ -58,4 +59,6 @@ class OfflineUserDataRepository
         override suspend fun setEqualizerBandLevels(levels: List<Short>) = musicPlayerPreferencesDataSource.setEqualizerBandLevels(levels)
 
         override suspend fun setEqualizerPreset(preset: Int) = musicPlayerPreferencesDataSource.setEqualizerPreset(preset)
+
+        override suspend fun setUseAnimations(useAnimations: Boolean) = musicPlayerPreferencesDataSource.setUseAnimations(useAnimations)
     }

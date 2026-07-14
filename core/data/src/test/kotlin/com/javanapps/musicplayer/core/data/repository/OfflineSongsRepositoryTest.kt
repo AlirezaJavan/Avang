@@ -7,8 +7,10 @@ import com.javanapps.musicplayer.core.model.Song
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -22,7 +24,14 @@ class OfflineSongsRepositoryTest {
     fun setup() {
         mediaStoreDataSource = mockk()
         analysisScheduler = mockk()
-        repository = OfflineSongsRepository(mediaStoreDataSource, analysisScheduler)
+        val testDispatcher = UnconfinedTestDispatcher()
+        repository =
+            OfflineSongsRepository(
+                mediaStoreDataSource,
+                analysisScheduler,
+                testDispatcher,
+                CoroutineScope(testDispatcher),
+            )
     }
 
     @Test

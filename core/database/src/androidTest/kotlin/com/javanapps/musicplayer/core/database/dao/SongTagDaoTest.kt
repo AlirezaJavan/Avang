@@ -32,7 +32,7 @@ class SongTagDaoTest {
     @Test
     fun replaceForSong_persistsTags() =
         runTest {
-            songTagDao.replaceForSong(1L, listOf(tag(1L, "Calm"), tag(1L, "Acoustic")))
+            songTagDao.replaceForSong(1L, listOf(tag(1L, "Calm"), tag(1L, "Acoustic")), analyzedAt = 0L)
 
             val labels = songTagDao.getAllLabels().first()
             assertEquals(listOf("Acoustic", "Calm"), labels)
@@ -41,8 +41,8 @@ class SongTagDaoTest {
     @Test
     fun replaceForSong_overwritesPreviousTags() =
         runTest {
-            songTagDao.replaceForSong(1L, listOf(tag(1L, "Calm")))
-            songTagDao.replaceForSong(1L, listOf(tag(1L, "Dance")))
+            songTagDao.replaceForSong(1L, listOf(tag(1L, "Calm")), analyzedAt = 0L)
+            songTagDao.replaceForSong(1L, listOf(tag(1L, "Dance")), analyzedAt = 0L)
 
             val labels = songTagDao.getAllLabels().first()
             assertEquals(listOf("Dance"), labels)
@@ -82,10 +82,20 @@ class SongTagDaoTest {
     @Test
     fun clearAll_removesEverything() =
         runTest {
-            songTagDao.replaceForSong(1L, listOf(tag(1L, "Calm")))
+            songTagDao.replaceForSong(1L, listOf(tag(1L, "Calm")), analyzedAt = 0L)
             songTagDao.clearAll()
 
             assertTrue(songTagDao.getAllLabels().first().isEmpty())
+        }
+
+    @Test
+    fun replaceForSong_withNoTags_stillMarksSongAnalyzed() =
+        runTest {
+            // A song can be analyzed and simply have no tag clear the confidence threshold.
+            // It must not look "unanalyzed" or the worker will keep retrying it forever.
+            songTagDao.replaceForSong(1L, emptyList(), analyzedAt = 123L)
+
+            assertEquals(listOf(1L), songTagDao.getAnalyzedSongIds())
         }
 
     private fun tag(

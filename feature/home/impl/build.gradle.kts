@@ -12,6 +12,10 @@ dependencies {
     androidTestImplementation(kotlin("test"))
 
     implementation(projects.feature.home.api)
+    implementation(projects.core.common)
+    implementation(projects.core.model)
+    implementation(projects.core.domain)
 
     implementation(libs.androidx.compose.animation)
+    implementation(libs.accompanist.permissions)
 }

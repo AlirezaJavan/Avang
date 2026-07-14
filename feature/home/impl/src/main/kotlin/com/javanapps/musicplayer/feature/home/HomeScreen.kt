@@ -1,5 +1,7 @@
 package com.javanapps.musicplayer.feature.home
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -32,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,11 +50,17 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.javanapps.musicplayer.core.model.HomeFeed
 import com.javanapps.musicplayer.core.model.PlayerState
 import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.ui.component.ArtworkImage
 import com.javanapps.musicplayer.core.ui.component.EmptyState
+import com.javanapps.musicplayer.core.ui.component.NotificationPermissionBanner
+import com.javanapps.musicplayer.core.ui.component.PermissionContent
 import com.javanapps.musicplayer.core.ui.component.ScreenHeader
 import com.javanapps.musicplayer.core.ui.component.ShimmerBox
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
@@ -64,31 +74,94 @@ fun NavGraphBuilder.homeScreen(onSongClick: (String) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun HomeScreen(
     onSongClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val permission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
 
-    HomeScreen(
-        uiState = uiState,
-        onSongClick = { songs, index ->
-            viewModel.playFromShelf(songs, index)
-            onSongClick(songs[index].mediaId)
-        },
-        onHeroClick = { onSongClick(it) },
-        onPlayPauseClick = {
-            val state = uiState
-            if (state is HomeUiState.Success && state.playerState.isPlaying) {
-                viewModel.pause()
-            } else {
-                viewModel.resume()
+    val permissionState = rememberPermissionState(permission)
+
+    if (permissionState.status.isGranted) {
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+        val onSongClickStable =
+            remember(onSongClick) {
+                { songs: List<Song>, index: Int ->
+                    viewModel.playFromShelf(songs, index)
+                    onSongClick(songs[index].mediaId)
+                }
             }
-        },
-        modifier = modifier,
-    )
+
+        val onPlayPauseClickStable =
+            remember(uiState) {
+                {
+                    val state = uiState
+                    if (state is HomeUiState.Success && state.playerState.isPlaying) {
+                        viewModel.pause()
+                    } else {
+                        viewModel.resume()
+                    }
+                }
+            }
+
+        Column(modifier = modifier.fillMaxSize()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                NotificationPermissionRow()
+            }
+            HomeScreen(
+                uiState = uiState,
+                onSongClick = onSongClickStable,
+                onHeroClick = onSongClick,
+                onPlayPauseClick = onPlayPauseClickStable,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    } else {
+        Box(
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors =
+                                listOf(
+                                    MaterialTheme.colorScheme.surface,
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                ),
+                        ),
+                    ),
+        ) {
+            PermissionContent(
+                shouldShowRationale = permissionState.status.shouldShowRationale,
+                onRequestPermission = { permissionState.launchPermissionRequest() },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun NotificationPermissionRow(modifier: Modifier = Modifier) {
+    val notificationPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+    var dismissed by rememberSaveable { mutableStateOf(false) }
+
+    if (!dismissed && !notificationPermissionState.status.isGranted) {
+        NotificationPermissionBanner(
+            shouldShowRationale = notificationPermissionState.status.shouldShowRationale,
+            onRequestPermission = { notificationPermissionState.launchPermissionRequest() },
+            onDismiss = { dismissed = true },
+            modifier = modifier.fillMaxWidth().wrapContentHeight().padding(16.dp),
+        )
+    }
 }
 
 @Composable
@@ -114,6 +187,7 @@ internal fun HomeScreen(
                     HomeContent(
                         feed = uiState.feed,
                         playerState = uiState.playerState,
+                        useAnimations = uiState.useAnimations,
                         onSongClick = onSongClick,
                         onHeroClick = onHeroClick,
                         onPlayPauseClick = onPlayPauseClick,
@@ -147,6 +221,7 @@ private fun HomeLoading(modifier: Modifier = Modifier) {
 private fun HomeContent(
     feed: HomeFeed,
     playerState: PlayerState,
+    useAnimations: Boolean,
     onSongClick: (List<Song>, Int) -> Unit,
     onHeroClick: (String) -> Unit,
     onPlayPauseClick: () -> Unit,
@@ -163,7 +238,7 @@ private fun HomeContent(
         val currentSong = playerState.currentSong
         if (currentSong != null) {
             item(key = "hero", contentType = "hero") {
-                StaggeredEntrance(index = 0) {
+                StaggeredEntrance(index = 0, enabled = useAnimations) {
                     HeroNowPlayingCard(
                         song = currentSong,
                         isPlaying = playerState.isPlaying,
@@ -184,6 +259,7 @@ private fun HomeContent(
             songs = feed.recentlyPlayed,
             onSongClick = onSongClick,
             delayIndex = 1,
+            useAnimations = useAnimations,
         )
         songShelf(
             key = "most_played",
@@ -191,6 +267,7 @@ private fun HomeContent(
             songs = feed.mostPlayed,
             onSongClick = onSongClick,
             delayIndex = 2,
+            useAnimations = useAnimations,
         )
         songShelf(
             key = "recently_added",
@@ -198,6 +275,7 @@ private fun HomeContent(
             songs = feed.recentlyAdded,
             onSongClick = onSongClick,
             delayIndex = 3,
+            useAnimations = useAnimations,
         )
     }
 }
@@ -208,16 +286,17 @@ private fun androidx.compose.foundation.lazy.LazyListScope.songShelf(
     songs: List<Song>,
     onSongClick: (List<Song>, Int) -> Unit,
     delayIndex: Int,
+    useAnimations: Boolean,
 ) {
     if (songs.isEmpty()) return
 
     item(key = "${key}_header", contentType = "header") {
-        StaggeredEntrance(index = delayIndex) {
+        StaggeredEntrance(index = delayIndex, enabled = useAnimations) {
             ShelfHeader(title = title)
         }
     }
     item(key = "${key}_row", contentType = "song_row") {
-        StaggeredEntrance(index = delayIndex) {
+        StaggeredEntrance(index = delayIndex, enabled = useAnimations) {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -373,8 +452,13 @@ private fun HeroNowPlayingCard(
 @Composable
 private fun StaggeredEntrance(
     index: Int,
+    enabled: Boolean,
     content: @Composable () -> Unit,
 ) {
+    if (!enabled) {
+        content()
+        return
+    }
     var visible by remember(index) { mutableStateOf(false) }
     LaunchedEffect(index) {
         kotlinx.coroutines.delay(index * 60L)

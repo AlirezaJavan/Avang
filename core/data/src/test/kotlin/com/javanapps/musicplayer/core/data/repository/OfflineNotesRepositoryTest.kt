@@ -3,6 +3,7 @@ package com.javanapps.musicplayer.core.data.repository
 import com.google.common.truth.Truth.assertThat
 import com.javanapps.musicplayer.core.testing.data.FakeSongNoteDao
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -14,7 +15,7 @@ class OfflineNotesRepositoryTest {
     @Before
     fun setup() {
         songNoteDao = FakeSongNoteDao()
-        repository = OfflineNotesRepository(songNoteDao)
+        repository = OfflineNotesRepository(songNoteDao, UnconfinedTestDispatcher())
     }
 
     @Test

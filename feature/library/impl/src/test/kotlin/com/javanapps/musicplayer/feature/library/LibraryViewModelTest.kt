@@ -46,6 +46,7 @@ class LibraryViewModelTest {
                 playlistRepository = playlistRepository,
                 playerController = playerController,
                 notesRepository = notesRepository,
+                defaultDispatcher = UnconfinedTestDispatcher(),
             )
     }
 

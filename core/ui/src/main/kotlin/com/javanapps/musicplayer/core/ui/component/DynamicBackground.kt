@@ -14,13 +14,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import kotlin.math.cos
 import kotlin.math.sin
@@ -99,7 +97,6 @@ fun DynamicBackground(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .blur(radius = 80.dp)
                         .alpha(0.45f),
                 contentScale = ContentScale.Crop,
             )

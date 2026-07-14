@@ -55,6 +55,7 @@ internal fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         userData = userData,
         onThemeChange = viewModel::setDarkThemeConfig,
         onDynamicColorChange = viewModel::setDynamicColor,
+        onUseAnimationsChange = viewModel::setUseAnimations,
         onLanguageChange = viewModel::setLanguage,
     )
 }
@@ -64,6 +65,7 @@ internal fun SettingsScreen(
     userData: UserData?,
     onThemeChange: (DarkThemeConfig) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
+    onUseAnimationsChange: (Boolean) -> Unit,
     onLanguageChange: (String) -> Unit,
 ) {
     Column(
@@ -104,6 +106,13 @@ internal fun SettingsScreen(
                         icon = AppIcons.ColorLens,
                         checked = data.dynamicColor,
                         onCheckedChange = onDynamicColorChange,
+                    )
+
+                    SettingsToggleItem(
+                        title = stringResource(CoreUiR.string.core_ui_use_animations),
+                        icon = AppIcons.Animation,
+                        checked = data.useAnimations,
+                        onCheckedChange = onUseAnimationsChange,
                     )
                 }
 

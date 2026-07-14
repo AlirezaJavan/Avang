@@ -6,6 +6,7 @@ import com.javanapps.musicplayer.core.testing.controller.FakePlayerController
 import com.javanapps.musicplayer.core.testing.media.FakeEqualizerManager
 import com.javanapps.musicplayer.core.testing.repository.FakeFavoritesRepository
 import com.javanapps.musicplayer.core.testing.repository.FakeNotesRepository
+import com.javanapps.musicplayer.core.testing.repository.FakeUserDataRepository
 import com.javanapps.musicplayer.core.testing.util.MainDispatcherRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,6 +24,7 @@ class PlayerViewModelTest {
     private val playerController = FakePlayerController()
     private val favoritesRepository = FakeFavoritesRepository()
     private val notesRepository = FakeNotesRepository()
+    private val userDataRepository = FakeUserDataRepository()
     private val equalizerManager = FakeEqualizerManager()
     private lateinit var viewModel: PlayerViewModel
 
@@ -33,6 +35,7 @@ class PlayerViewModelTest {
                 playerController = playerController,
                 favoritesRepository = favoritesRepository,
                 notesRepository = notesRepository,
+                userDataRepository = userDataRepository,
                 equalizerManager = equalizerManager,
             )
     }

@@ -9,7 +9,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -18,16 +17,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.javanapps.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 fun GlassCard(
-    hazeState: HazeState,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     shape: Shape = MaterialTheme.shapes.medium,
-    color: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+    color: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
     content: @Composable () -> Unit,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -38,8 +34,7 @@ fun GlassCard(
                 shape = shape,
                 ambientColor = primaryColor.copy(alpha = 0.15f),
                 spotColor = primaryColor.copy(alpha = 0.25f),
-            ).hazeEffect(state = hazeState)
-            .border(
+            ).border(
                 width = 1.dp,
                 brush =
                     Brush.verticalGradient(
@@ -67,7 +62,6 @@ fun GlassCard(
 private fun GlassCardPreview() {
     MusicPlayerTheme {
         GlassCard(
-            hazeState = remember { HazeState() },
             modifier = Modifier.fillMaxWidth().height(80.dp),
         ) {
             Box(modifier = Modifier.fillMaxWidth().height(80.dp))

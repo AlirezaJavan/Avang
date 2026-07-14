@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -23,7 +24,7 @@ class OfflinePlaylistRepositoryTest {
     fun setup() {
         playlistDao = mockk()
         mediaStoreDataSource = mockk()
-        repository = OfflinePlaylistRepository(playlistDao, mediaStoreDataSource)
+        repository = OfflinePlaylistRepository(playlistDao, mediaStoreDataSource, UnconfinedTestDispatcher())
     }
 
     @Test

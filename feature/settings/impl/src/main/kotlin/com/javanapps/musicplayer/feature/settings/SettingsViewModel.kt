@@ -46,4 +46,10 @@ class SettingsViewModel
             }
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language))
         }
+
+        fun setUseAnimations(useAnimations: Boolean) {
+            viewModelScope.launch {
+                userDataRepository.setUseAnimations(useAnimations)
+            }
+        }
     }

@@ -2,6 +2,8 @@ package com.javanapps.musicplayer.feature.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.javanapps.musicplayer.core.common.dispatcher.Dispatcher
+import com.javanapps.musicplayer.core.common.dispatcher.MusicPlayerDispatchers.Default
 import com.javanapps.musicplayer.core.domain.controller.PlayerController
 import com.javanapps.musicplayer.core.domain.repository.FavoritesRepository
 import com.javanapps.musicplayer.core.domain.repository.NotesRepository
@@ -13,17 +15,22 @@ import com.javanapps.musicplayer.core.model.Playlist
 import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.model.SongNote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val SEARCH_DEBOUNCE_MS = 300L
 
 @HiltViewModel
 class LibraryViewModel
@@ -34,6 +41,7 @@ class LibraryViewModel
         private val playlistRepository: PlaylistRepository,
         private val playerController: PlayerController,
         private val notesRepository: NotesRepository,
+        @Dispatcher(Default) private val defaultDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val _searchQuery = MutableStateFlow("")
         val searchQuery = _searchQuery.asStateFlow()
@@ -81,11 +89,14 @@ class LibraryViewModel
                 songsRepository.getSongs(),
                 songsRepository.getAlbums(),
                 songsRepository.getArtists(),
-                _searchQuery,
+                // Empty query (including the initial value) is not debounced, so the screen
+                // isn't held on Loading and clearing the search filters instantly.
+                _searchQuery.debounce { query -> if (query.isEmpty()) 0L else SEARCH_DEBOUNCE_MS },
                 _sortOrder,
             ) { songs, albums, artists, query, sort ->
                 val filteredSongs =
                     songs
+                        .asSequence()
                         .filter {
                             it.title.contains(query, ignoreCase = true) ||
                                 it.artist.contains(query, ignoreCase = true)
@@ -98,18 +109,19 @@ class LibraryViewModel
                                     SortOrder.DURATION -> it.duration.toString()
                                 }
                             },
-                        )
+                        ).toList()
 
                 LibraryUiState.Success(
                     songs = filteredSongs,
                     albums = albums.filter { it.title.contains(query, ignoreCase = true) },
                     artists = artists.filter { it.name.contains(query, ignoreCase = true) },
                 )
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = LibraryUiState.Loading,
-            )
+            }.flowOn(defaultDispatcher)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = LibraryUiState.Loading,
+                )
 
         fun onSearchQueryChanged(query: String) {
             _searchQuery.value = query

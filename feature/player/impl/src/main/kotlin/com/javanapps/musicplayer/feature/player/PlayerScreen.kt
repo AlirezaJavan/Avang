@@ -1,9 +1,6 @@
 package com.javanapps.musicplayer.feature.player
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -50,6 +47,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,7 +74,6 @@ import com.javanapps.musicplayer.core.ui.component.ArtworkImage
 import com.javanapps.musicplayer.core.ui.component.DynamicBackground
 import com.javanapps.musicplayer.core.ui.component.SongRow
 import com.javanapps.musicplayer.core.ui.icon.AppIcons
-import com.javanapps.musicplayer.core.ui.transition.PlayerTransitionKeys
 import com.javanapps.musicplayer.core.ui.util.rememberHapticFeedback
 import com.javanapps.musicplayer.feature.player.navigation.PlayerRoute
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -85,29 +82,23 @@ import java.util.Locale
 import androidx.compose.animation.core.RepeatMode as AnimationRepeatMode
 import com.javanapps.musicplayer.core.ui.R as CoreUiR
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.playerScreen(
     onBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
     onEqualizerClick: () -> Unit = {},
 ) {
     composable<PlayerRoute> {
         PlayerScreen(
             onBack = onBack,
             onEqualizerClick = onEqualizerClick,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = this,
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PlayerScreen(
     onBack: () -> Unit,
     onEqualizerClick: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
     viewModel: PlayerViewModel = hiltViewModel(),
 ) {
@@ -126,18 +117,24 @@ internal fun PlayerScreen(
         }
 
     val playerState by stableStateFlow.collectAsStateWithLifecycle(PlayerState())
-    val currentPosition by positionFlow.collectAsStateWithLifecycle(0L)
+
+    val currentPositionState = remember { mutableLongStateOf(0L) }
+    LaunchedEffect(positionFlow) {
+        positionFlow.collect { currentPositionState.longValue = it }
+    }
 
     val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
     val currentNote by viewModel.currentNote.collectAsStateWithLifecycle()
     val isEqualizerAvailable by viewModel.isEqualizerAvailable.collectAsStateWithLifecycle()
+    val useAnimations by viewModel.useAnimations.collectAsStateWithLifecycle()
 
     PlayerScreen(
         playerState = playerState,
-        currentPosition = currentPosition,
+        currentPosition = { currentPositionState.longValue },
         isFavorite = isFavorite,
         currentNote = currentNote,
         isEqualizerAvailable = isEqualizerAvailable,
+        useAnimations = useAnimations,
         onBack = onBack,
         onEqualizerClick = onEqualizerClick,
         onFavoriteToggle = viewModel::toggleFavorite,
@@ -150,20 +147,19 @@ internal fun PlayerScreen(
         onPlayMediaId = viewModel::play,
         onSaveNote = viewModel::saveNote,
         onDeleteNote = viewModel::deleteNote,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope,
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PlayerScreen(
     playerState: PlayerState,
-    currentPosition: Long,
+    currentPosition: () -> Long,
     isFavorite: Boolean,
     currentNote: SongNote?,
     isEqualizerAvailable: Boolean,
+    useAnimations: Boolean,
     onBack: () -> Unit,
     onEqualizerClick: () -> Unit,
     onFavoriteToggle: () -> Unit,
@@ -176,8 +172,6 @@ internal fun PlayerScreen(
     onPlayMediaId: (String) -> Unit,
     onSaveNote: (String) -> Unit,
     onDeleteNote: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
 ) {
     var showQueue by remember { mutableStateOf(false) }
@@ -187,7 +181,11 @@ internal fun PlayerScreen(
     val rotationAnimatable = remember { Animatable(0f) }
     val isPlaying = playerState.isPlaying
 
-    LaunchedEffect(isPlaying) {
+    LaunchedEffect(isPlaying, useAnimations) {
+        if (!useAnimations) {
+            rotationAnimatable.snapTo(0f)
+            return@LaunchedEffect
+        }
         if (isPlaying) {
             rotationAnimatable.snapTo(0f)
             rotationAnimatable.animateTo(
@@ -210,131 +208,122 @@ internal fun PlayerScreen(
         }
     }
 
-    with(sharedTransitionScope) {
-        val scope = this
-        val artworkSharedState =
-            rememberSharedContentState(
-                key = PlayerTransitionKeys.artwork(playerState.currentSong?.id ?: 0L),
+    DynamicBackground(artworkUri = playerState.currentSong?.artworkUri) {
+        Column(
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            val onHeaderQueueClick = remember { { showQueue = true } }
+            PlayerHeader(
+                onBack = onBack,
+                onEqualizerClick = onEqualizerClick,
+                onQueueClick = onHeaderQueueClick,
+                isEqualizerAvailable = isEqualizerAvailable,
             )
-        val artworkModifier =
-            remember(artworkSharedState, animatedVisibilityScope) {
-                with(scope) {
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            ArtworkImage(
+                artworkUri = playerState.currentSong?.artworkUri,
+                isCdStyle = true,
+                modifier =
                     Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .graphicsLayer { rotationZ = rotationAnimatable.value }
-                        .sharedElement(artworkSharedState, animatedVisibilityScope)
-                }
-            }
-
-        DynamicBackground(artworkUri = playerState.currentSong?.artworkUri) {
-            Column(
-                modifier =
-                    modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val onHeaderQueueClick = remember { { showQueue = true } }
-                PlayerHeader(
-                    onBack = onBack,
-                    onEqualizerClick = onEqualizerClick,
-                    onQueueClick = onHeaderQueueClick,
-                    isEqualizerAvailable = isEqualizerAvailable,
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                ArtworkImage(
-                    artworkUri = playerState.currentSong?.artworkUri,
-                    isCdStyle = true,
-                    modifier = artworkModifier,
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                SongInfo(
-                    title = playerState.currentSong?.title ?: "",
-                    artist = playerState.currentSong?.artist ?: "",
-                    isFavorite = isFavorite,
-                    hasNote = currentNote != null,
-                    onFavoriteToggle = {
-                        haptic()
-                        onFavoriteToggle()
-                    },
-                    onAddNoteClick = { showNoteSheet = true },
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                PlaybackSlider(
-                    position = currentPosition,
-                    duration = playerState.duration,
-                    onSeek = {
-                        haptic()
-                        onSeek(it)
-                    },
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                PlaybackControls(
-                    isPlaying = playerState.isPlaying,
-                    shuffleMode = playerState.shuffleMode,
-                    repeatMode = playerState.repeatMode,
-                    onPlayPauseClick = {
-                        haptic()
-                        onPlayPause()
-                    },
-                    onPreviousClick = {
-                        haptic()
-                        onPrevious()
-                    },
-                    onNextClick = {
-                        haptic()
-                        onNext()
-                    },
-                    onShuffleClick = {
-                        haptic()
-                        onShuffleToggle()
-                    },
-                    onRepeatClick = {
-                        haptic()
-                        onRepeatToggle()
-                    },
-                )
-
-                Spacer(modifier = Modifier.height(48.dp))
-            }
-        }
-
-        if (showQueue) {
-            QueueBottomSheet(
-                queue = playerState.queue,
-                currentSong = playerState.currentSong,
-                onSongClick = { mediaId ->
-                    onPlayMediaId(mediaId)
-                    showQueue = false
-                },
-                onDismiss = { showQueue = false },
+                        .graphicsLayer {
+                            if (useAnimations) {
+                                rotationZ = rotationAnimatable.value
+                            }
+                        },
             )
-        }
 
-        if (showNoteSheet) {
-            NoteBottomSheet(
-                currentNote = currentNote,
-                onDismiss = { showNoteSheet = false },
-                onSave = { content ->
-                    onSaveNote(content)
-                    showNoteSheet = false
+            Spacer(modifier = Modifier.weight(1f))
+
+            SongInfo(
+                title = playerState.currentSong?.title ?: "",
+                artist = playerState.currentSong?.artist ?: "",
+                isFavorite = isFavorite,
+                hasNote = currentNote != null,
+                onFavoriteToggle = {
+                    haptic()
+                    onFavoriteToggle()
                 },
-                onDelete = {
-                    onDeleteNote()
-                    showNoteSheet = false
+                onAddNoteClick = { showNoteSheet = true },
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            PlaybackSlider(
+                position = currentPosition,
+                duration = playerState.duration,
+                onSeek = {
+                    haptic()
+                    onSeek(it)
                 },
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            PlaybackControls(
+                isPlaying = playerState.isPlaying,
+                shuffleMode = playerState.shuffleMode,
+                repeatMode = playerState.repeatMode,
+                useAnimations = useAnimations,
+                onPlayPauseClick = {
+                    haptic()
+                    onPlayPause()
+                },
+                onPreviousClick = {
+                    haptic()
+                    onPrevious()
+                },
+                onNextClick = {
+                    haptic()
+                    onNext()
+                },
+                onShuffleClick = {
+                    haptic()
+                    onShuffleToggle()
+                },
+                onRepeatClick = {
+                    haptic()
+                    onRepeatToggle()
+                },
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
         }
+    }
+
+    if (showQueue) {
+        QueueBottomSheet(
+            queue = playerState.queue,
+            currentSong = playerState.currentSong,
+            onSongClick = { mediaId ->
+                onPlayMediaId(mediaId)
+                showQueue = false
+            },
+            onDismiss = { showQueue = false },
+        )
+    }
+
+    if (showNoteSheet) {
+        NoteBottomSheet(
+            currentNote = currentNote,
+            onDismiss = { showNoteSheet = false },
+            onSave = { content ->
+                onSaveNote(content)
+                showNoteSheet = false
+            },
+            onDelete = {
+                onDeleteNote()
+                showNoteSheet = false
+            },
+        )
     }
 }
 
@@ -462,19 +451,26 @@ private fun SongInfo(
 
 @Composable
 private fun PlaybackSlider(
-    position: Long,
+    position: () -> Long,
     duration: Long,
     onSeek: (Long) -> Unit,
 ) {
-    var sliderPosition by remember(position) { mutableFloatStateOf(position.toFloat()) }
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
     var isDragging by remember { mutableStateOf(false) }
+
+    val currentPositionValue = position()
+    LaunchedEffect(currentPositionValue) {
+        if (!isDragging) {
+            sliderPosition = currentPositionValue.toFloat()
+        }
+    }
 
     // Playback progress always reads left-to-right, even in RTL locales, matching user
     // expectations for a timeline (same convention as most media players).
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Slider(
-                value = if (isDragging) sliderPosition else position.toFloat(),
+                value = sliderPosition,
                 onValueChange = {
                     isDragging = true
                     sliderPosition = it
@@ -491,7 +487,7 @@ private fun PlaybackSlider(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = formatDuration(if (isDragging) sliderPosition.toLong() else position),
+                    text = formatDuration(sliderPosition.toLong()),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Text(
@@ -508,6 +504,7 @@ private fun PlaybackControls(
     isPlaying: Boolean,
     shuffleMode: Boolean,
     repeatMode: RepeatMode,
+    useAnimations: Boolean,
     onPlayPauseClick: () -> Unit,
     onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
@@ -515,16 +512,20 @@ private fun PlaybackControls(
     onRepeatClick: () -> Unit,
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "Pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.1f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(1000),
-                repeatMode = AnimationRepeatMode.Reverse,
-            ),
-        label = "PulseScale",
-    )
+    val pulseScale by if (useAnimations) {
+        infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 1.1f,
+            animationSpec =
+                infiniteRepeatable(
+                    animation = tween(1000),
+                    repeatMode = AnimationRepeatMode.Reverse,
+                ),
+            label = "PulseScale",
+        )
+    } else {
+        remember { mutableFloatStateOf(1f) }
+    }
 
     // Transport controls keep a fixed left-to-right order (prev, play/pause, next) even in
     // RTL locales, matching the universal media-player convention users expect.
@@ -555,21 +556,31 @@ private fun PlaybackControls(
                 modifier =
                     Modifier
                         .size(72.dp)
-                        .graphicsLayer(
-                            scaleX = if (!isPlaying) pulseScale else 1f,
-                            scaleY = if (!isPlaying) pulseScale else 1f,
-                        ),
+                        .graphicsLayer {
+                            val scale = if (!isPlaying && useAnimations) pulseScale else 1f
+                            scaleX = scale
+                            scaleY = scale
+                        },
             ) {
-                AnimatedContent(
-                    targetState = isPlaying,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(animationSpec = tween(200))
-                    },
-                    label = "PlayPauseAnimation",
-                ) { playing ->
+                if (useAnimations) {
+                    AnimatedContent(
+                        targetState = isPlaying,
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(200)) togetherWith fadeOut(animationSpec = tween(200))
+                        },
+                        label = "PlayPauseAnimation",
+                    ) { playing ->
+                        Icon(
+                            imageVector = if (playing) AppIcons.PauseCircleFilled else AppIcons.PlayCircleFilled,
+                            contentDescription = stringResource(if (playing) CoreUiR.string.core_ui_pause else CoreUiR.string.core_ui_play),
+                            modifier = Modifier.fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                } else {
                     Icon(
-                        imageVector = if (playing) AppIcons.PauseCircleFilled else AppIcons.PlayCircleFilled,
-                        contentDescription = stringResource(if (playing) CoreUiR.string.core_ui_pause else CoreUiR.string.core_ui_play),
+                        imageVector = if (isPlaying) AppIcons.PauseCircleFilled else AppIcons.PlayCircleFilled,
+                        contentDescription = stringResource(if (isPlaying) CoreUiR.string.core_ui_pause else CoreUiR.string.core_ui_play),
                         modifier = Modifier.fillMaxSize(),
                         tint = MaterialTheme.colorScheme.primary,
                     )

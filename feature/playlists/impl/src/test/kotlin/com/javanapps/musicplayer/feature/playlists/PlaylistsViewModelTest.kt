@@ -72,14 +72,14 @@ class PlaylistsViewModelTest {
 
             analysisRepository.setTags(
                 listOf(
-                    SongTag(1L, "Rock", 0.9f, TagSource.AUDIO_RULES),
-                    SongTag(2L, "Rock", 0.9f, TagSource.AUDIO_RULES),
+                    SongTag(1L, "Jazz", 0.9f, TagSource.AUDIO_MODEL),
+                    SongTag(2L, "Jazz", 0.9f, TagSource.AUDIO_MODEL),
                 ),
             )
 
             val state = viewModel.uiState.value as PlaylistsUiState.Success
             assertEquals(1, state.smartPlaylists.size)
-            assertEquals("Rock", state.smartPlaylists[0].label)
+            assertEquals("Jazz", state.smartPlaylists[0].label)
             assertEquals(2, state.smartPlaylists[0].songCount)
         }
 
@@ -88,18 +88,18 @@ class PlaylistsViewModelTest {
         runTest {
             backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
 
-            // Only the eight curated labels should surface; everything else is hidden.
+            // Only the curated genre labels should surface; everything else is hidden.
             analysisRepository.setTags(
                 listOf(
-                    SongTag(1L, "Calm", 0.9f, TagSource.AUDIO_RULES),
-                    SongTag(2L, "Intense", 0.9f, TagSource.AUDIO_RULES),
-                    SongTag(3L, "Pop", 0.9f, TagSource.AUDIO_RULES),
+                    SongTag(1L, "Jazz", 0.9f, TagSource.AUDIO_MODEL),
+                    SongTag(2L, "Reggae", 0.9f, TagSource.AUDIO_MODEL),
+                    SongTag(3L, "Sad", 0.9f, TagSource.AUDIO_MODEL),
                 ),
             )
 
             val state = viewModel.uiState.value as PlaylistsUiState.Success
-            assertEquals(1, state.smartPlaylists.size)
-            assertEquals("Pop", state.smartPlaylists[0].label)
+            assertEquals(2, state.smartPlaylists.size)
+            assertTrue(state.smartPlaylists.none { it.label == "Sad" })
         }
 
     @Test
