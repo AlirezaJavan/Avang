@@ -37,7 +37,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -113,12 +112,6 @@ internal fun LibraryScreen(
         }
 
     val permissionState = rememberPermissionState(permission)
-
-    LaunchedEffect(permissionState.status.isGranted) {
-        if (permissionState.status.isGranted) {
-            viewModel.refresh()
-        }
-    }
 
     Box(modifier = modifier.fillMaxSize()) {
         if (permissionState.status.isGranted) {

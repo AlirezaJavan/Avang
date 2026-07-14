@@ -132,9 +132,9 @@ private fun MusicPlayerApp(viewModel: MainViewModel) {
         }
     val audioPermissionState = rememberPermissionState(audioPermission)
 
-    // Starts (incremental — already-analyzed songs are skipped) library analysis as soon as the
-    // app opens with permission already granted, rather than waiting for the user to visit a
-    // specific screen. Re-fires if the permission is granted later in this same session too.
+    // Covers the moment permission is granted mid-session (e.g. from the request dialog).
+    // App-open and background->foreground refreshes are handled process-wide in MyApplication,
+    // which can't observe permission grants itself since those only happen inside an Activity.
     LaunchedEffect(audioPermissionState.status.isGranted) {
         if (audioPermissionState.status.isGranted) {
             viewModel.syncLibrary()

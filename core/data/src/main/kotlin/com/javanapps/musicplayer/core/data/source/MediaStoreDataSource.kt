@@ -48,21 +48,18 @@ class MediaStoreDataSource
                     observer,
                 )
                 trySend(querySongs())
-                // Kick off a background scan so files transferred via ADB or a file manager
-                // (which bypass MediaStore indexing) are discovered without the user having
-                // to play them first. The ContentObserver above will fire when the scan
-                // adds new entries, automatically refreshing the list.
-                triggerMediaScan()
                 awaitClose { contentResolver.unregisterContentObserver(observer) }
             }.flowOn(ioDispatcher).conflate()
 
         fun triggerMediaScan() {
+            // Scoped to music-relevant directories only - scanning the whole external
+            // storage root (Environment.getExternalStorageDirectory()) is recursive over
+            // the entire device and was the main cause of Library screen lag.
             val dirs =
                 listOfNotNull(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS),
-                    Environment.getExternalStorageDirectory(),
                 ).filter { it.exists() }
                     .map { it.absolutePath }
                     .toTypedArray()
