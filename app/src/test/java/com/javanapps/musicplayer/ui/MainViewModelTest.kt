@@ -1,6 +1,7 @@
 package com.javanapps.musicplayer.ui
 
 import com.javanapps.musicplayer.core.testing.controller.FakePlayerController
+import com.javanapps.musicplayer.core.testing.repository.FakeSongsRepository
 import com.javanapps.musicplayer.core.testing.repository.FakeUserDataRepository
 import com.javanapps.musicplayer.core.testing.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +23,7 @@ class MainViewModelTest {
     private lateinit var viewModel: MainViewModel
     private val userDataRepository = FakeUserDataRepository()
     private val playerController = FakePlayerController()
+    private val songsRepository = FakeSongsRepository()
 
     @Before
     fun setup() {
@@ -29,6 +31,7 @@ class MainViewModelTest {
             MainViewModel(
                 userDataRepository = userDataRepository,
                 playerController = playerController,
+                songsRepository = songsRepository,
             )
     }
 

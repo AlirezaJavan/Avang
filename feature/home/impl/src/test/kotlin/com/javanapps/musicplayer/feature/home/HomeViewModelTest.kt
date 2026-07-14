@@ -4,6 +4,7 @@ import com.javanapps.musicplayer.core.model.Song
 import com.javanapps.musicplayer.core.testing.controller.FakePlayerController
 import com.javanapps.musicplayer.core.testing.repository.FakePlayHistoryRepository
 import com.javanapps.musicplayer.core.testing.repository.FakeSongsRepository
+import com.javanapps.musicplayer.core.testing.repository.FakeUserDataRepository
 import com.javanapps.musicplayer.core.testing.util.MainDispatcherRule
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ class HomeViewModelTest {
 
     private val songsRepository = FakeSongsRepository()
     private val playHistoryRepository = FakePlayHistoryRepository()
+    private val userDataRepository = FakeUserDataRepository()
     private val playerController = FakePlayerController()
     private lateinit var viewModel: HomeViewModel
 
@@ -31,6 +33,8 @@ class HomeViewModelTest {
             HomeViewModel(
                 songsRepository = songsRepository,
                 playHistoryRepository = playHistoryRepository,
+                userDataRepository = userDataRepository,
+                defaultDispatcher = dispatcherRule.testDispatcher,
                 playerController = playerController,
             )
     }
