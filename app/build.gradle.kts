@@ -16,8 +16,8 @@ android {
 
     defaultConfig {
         applicationId = "com.javanapps.musicplayer"
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Must match DEFAULT_LANGUAGE in core/datastore/build.gradle.kts
         buildConfigField("String", "DEFAULT_LANGUAGE", "\"${libs.versions.defaultLanguage.get()}\"")
